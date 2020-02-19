@@ -92,7 +92,7 @@ namespace TobiiParser
                 time -= sec * 1_000;
                 int msec = (int)Math.Floor(time);
 
-                string s = hour.ToString() + "\t" + min.ToString() + "\t" + sec.ToString() + "\t" + msec.ToString() + "\t" + tr.zone.ToString();
+                string s = hour.ToString() + "\t" + min.ToString() + "\t" + sec.ToString() + "\t" + msec.ToString() + "\t" + tr.CurFZone.ToString();
                 writer.WriteLine(s);
             }
         }

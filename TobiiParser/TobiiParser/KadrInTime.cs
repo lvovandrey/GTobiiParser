@@ -108,5 +108,6 @@ namespace TobiiParser
             string kadr = GetKadr(kit, tobiiZone);
             return kadr;
         }
+
     }
 }

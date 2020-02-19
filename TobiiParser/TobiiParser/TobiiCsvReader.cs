@@ -25,8 +25,8 @@ namespace TobiiParser
             {
                 string[] first_string_arr = { "" };
                 first_string_arr = rd.ReadLine().Split(delimiter);
-                N_timestampCol = SearchCol(first_string_arr, "Recording timestamp");
-                N_firstZoneCol = SearchCol(first_string_arr, "AOI hit [");
+                N_timestampCol = SearchColFirst(first_string_arr, "Recording timestamp");
+                N_firstZoneCol = SearchColFirst(first_string_arr, "AOI hit [");
 
                 bool EndOfFile=false;
                 while (!EndOfFile)
@@ -93,14 +93,14 @@ namespace TobiiParser
                 if (s == null) continue;
                 if (s.IndexOf(colName) > -1)
                 {
-                    zones.Add(ii);
+                    zones.Add(ii+1);
                 }
                 ii++;
             }
             return zones;
         }
 
-        int SearchColSpecial(string[] row, string colName )
+        int SearchColFirst(string[] row, string colName )
         {
             int ii = 0;
             bool find = false;
@@ -116,27 +116,60 @@ namespace TobiiParser
         }
 
 
-        //Убираем повторы из записи тоби - компактифицируем ее
-        public List<TobiiRecord> CompactTobiiRecords(List<TobiiRecord> tRs)
+        private bool IsEqual(List<int> a, List<int> b)
         {
-            List<TobiiRecord> TRSNew = new List<TobiiRecord>();
-            int ZoneBefore = -2;
-            foreach (var tr in tRs)
-            {
-                if (tr.zone != ZoneBefore)
-                {
-                    TRSNew.Add(tr);
-                    ZoneBefore = tr.zone;
-                }
-            }
-            return TRSNew;
+            if (a.Count() != b.Count) return false;
+            for (int i = 0; i < a.Count; i++)
+                if (a[i] != b[i])  return false;
+            return true;
         }
 
-       public List<TobiiRecord> ClearFromGarbageZone(List<TobiiRecord> tRs, int GarbageZone, long UPBoundFiltrationOfGarbage)
+        //Убираем повторы из записи тоби - компактифицируем ее
+        public List<TobiiRecord> CompactTobiiRecords(List<TobiiRecord> tRs, string mode="MultZones")
+        {
+            if (mode == "FZones")
+            {
+                List<TobiiRecord> TRSNew = new List<TobiiRecord>();
+                int ZoneBefore = -2;
+                foreach (var tr in tRs)
+                {
+                    if (tr.CurFZone != ZoneBefore)
+                    {
+                        TRSNew.Add(tr);
+                        ZoneBefore = tr.CurFZone;
+                    }
+                }
+                return TRSNew;
+            }
+            else if (mode == "MultZones")
+            {
+                List<TobiiRecord> TRSNew = new List<TobiiRecord>();
+                List<int> ZonesBefore = tRs[0].zones;
+
+                for (int i = 1; i<tRs.Count;i++)
+                {
+                    var tr = tRs[i];
+                    if (!IsEqual(tr.zones, ZonesBefore))
+                    {
+                        TRSNew.Add(tr);
+                        ZonesBefore = tr.zones;
+                    }
+                }
+                return TRSNew;
+            }
+            else
+                throw new Exception("CompactTobiiRecords - нет варианта с параметром mode = " + mode);
+        
+
+        }
+
+
+
+        public List<TobiiRecord> ClearFromGarbageZone(List<TobiiRecord> tRs, int GarbageZone, long UPBoundFiltrationOfGarbage)
         {
             List<TobiiRecord> TRSNew = new List<TobiiRecord>();
             foreach (var tr in tRs)
-                if (tr.zone != GarbageZone || tRs.IndexOf(tr) == 0 || tRs.IndexOf(tr) > tRs.Count - 1 || (tr.time_ms - tRs[tRs.IndexOf(tr) - 1].time_ms > UPBoundFiltrationOfGarbage))
+                if (tr.CurFZone != GarbageZone || tRs.IndexOf(tr) == 0 || tRs.IndexOf(tr) > tRs.Count - 1 || (tr.time_ms - tRs[tRs.IndexOf(tr) - 1].time_ms > UPBoundFiltrationOfGarbage))
                     TRSNew.Add(tr);
 
             return TRSNew;

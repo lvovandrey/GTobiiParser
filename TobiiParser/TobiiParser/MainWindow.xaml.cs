@@ -28,7 +28,16 @@ namespace TobiiParser
     {
         public long time_ms;
         public List<int> zones;
-        public int Zone;
+        public List<int> fzones;
+        public int CurFZone;
+
+        public TobiiRecord()
+        {
+            time_ms = 0;
+            zones = new List<int>();
+            fzones = new List<int>();
+            CurFZone = -1;
+        }
     }
     public partial class MainWindow : Window
     {
@@ -65,24 +74,34 @@ namespace TobiiParser
         {
             
         }
-
-        private void Button_Click_2(object sender, RoutedEventArgs e)
+        private bool IsEqual(List<int> a, List<int> b)
         {
-            TobiiCsvReader tobiiCsvReader = new TobiiCsvReader();
-            List<TobiiRecord> tobiiRecords = new List<TobiiRecord>();
-            tobiiCsvReader.TobiiCSCRead(@"C:\_\1\1.csv", tobiiRecords);
-            List<TobiiRecord> FiltredTobiiList = tobiiCsvReader.CompactTobiiRecords(tobiiRecords);
-            TabOfKeys tabOfKeys =  ExcelReader.ReadTabOfKeys(@"C:\_\Tab2new.xlsx");
-            List<KadrInTime> kadrInTimes = ExcelReader.ReadKadrSets(@"C:\_\1\1_k.xls");
-            FZoneTab fZoneTab = new FZoneTab();
-            fZoneTab.Calculate(FiltredTobiiList, kadrInTimes, tabOfKeys);
-            fZoneTab.FZoneList = tobiiCsvReader.ClearFromGarbageZone(fZoneTab.FZoneList, -1, 500);
-            fZoneTab.WriteResult(@"C:\tmp\1\1.txt");
-
-            List<Interval> intervals = ExcelReader.SeparatorIntervalsReadFromExcel(@"C:\_\1\1_reg.xls");
-            ResultSeparator resultSeparator = new ResultSeparator(@"C:\_\1\reg\", intervals, fZoneTab.FZoneList, "1");
-            resultSeparator.Separate();
+            if (a.Count() != b.Count) return false;
+            for (int i = 0; i < a.Count; i++)
+                if (a[i] != b[i]) return false;
+            return true;
         }
+
+        //private void Button_Click_2(object sender, RoutedEventArgs e)
+        //{
+
+            
+
+        ////    TobiiCsvReader tobiiCsvReader = new TobiiCsvReader();
+        ////    List<TobiiRecord> tobiiRecords = new List<TobiiRecord>();
+        ////    tobiiCsvReader.TobiiCSCRead(@"C:\_\1\1.csv", tobiiRecords);
+        ////    List<TobiiRecord> FiltredTobiiList = tobiiCsvReader.CompactTobiiRecords(tobiiRecords);
+        ////    TabOfKeys tabOfKeys =  ExcelReader.ReadTabOfKeys(@"C:\_\Tab2new.xlsx");
+        ////    List<KadrInTime> kadrInTimes = ExcelReader.ReadKadrSets(@"C:\_\1\1_k.xls");
+        ////    FZoneTab fZoneTab = new FZoneTab();
+        ////    fZoneTab.Calculate(FiltredTobiiList, kadrInTimes, tabOfKeys);
+        ////    fZoneTab.FZoneList = tobiiCsvReader.ClearFromGarbageZone(fZoneTab.FZoneList, -1, 500);
+        ////    fZoneTab.WriteResult(@"C:\tmp\1\1.txt");
+
+        ////    List<Interval> intervals = ExcelReader.SeparatorIntervalsReadFromExcel(@"C:\_\1\1_reg.xls");
+        ////    ResultSeparator resultSeparator = new ResultSeparator(@"C:\_\1\reg\", intervals, fZoneTab.FZoneList, "1");
+        ////    resultSeparator.Separate();
+        //}
 
         private void Button_Click_3(object sender, RoutedEventArgs e)
         {
@@ -131,5 +150,7 @@ namespace TobiiParser
         {
             ExcelReader.ReadTabOfKeys(@"C:\_\Tab2new2.xlsx");
         }
+
+
     }
 }

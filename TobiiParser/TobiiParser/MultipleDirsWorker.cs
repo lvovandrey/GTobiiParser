@@ -21,14 +21,14 @@ namespace TobiiParser
             TabOfKeys tabOfKeys = ExcelReader.ReadTabOfKeys(tab2File);
             List<KadrInTime> kadrInTimes = ExcelReader.ReadKadrSets(file_k);
             FZoneTab fZoneTab = new FZoneTab();
-            fZoneTab.Calculate(FiltredTobiiList, kadrInTimes, tabOfKeys);
-            fZoneTab.FZoneList = tobiiCsvReader.ClearFromGarbageZone(fZoneTab.FZoneList, -1, 500);
-            fZoneTab.FZoneList = tobiiCsvReader.CompactTobiiRecords(fZoneTab.FZoneList);
+            List<TobiiRecord> FZoneList = fZoneTab.Calculate(FiltredTobiiList, kadrInTimes, tabOfKeys);
+            FZoneList = tobiiCsvReader.ClearFromGarbageZone(FZoneList, -1, 500);
+            FZoneList = tobiiCsvReader.CompactTobiiRecords(FZoneList, "FZones");
 
-            fZoneTab.WriteResult(file_csv.Replace(".csv", ".txt"));
+            fZoneTab.WriteResult(file_csv.Replace(".csv", ".txt"), FZoneList);
             
             List<Interval> intervals = ExcelReader.SeparatorIntervalsReadFromExcel(file_reg);
-            ResultSeparator resultSeparator = new ResultSeparator(dir+@"\reg\", intervals, fZoneTab.FZoneList, Path.GetFileName(file_csv).Replace(".csv", "_"));
+            ResultSeparator resultSeparator = new ResultSeparator(dir+@"\reg\", intervals, FZoneList, Path.GetFileName(file_csv).Replace(".csv", "_"));
             resultSeparator.Separate();
         }
 

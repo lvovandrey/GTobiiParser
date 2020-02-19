@@ -9,32 +9,46 @@ namespace TobiiParser
 {
     public class FZoneTab
     {
-        public List<TobiiRecord> FZoneList;
+        //public List<TobiiRecord> FZoneList;
 
-        public void Calculate(List<TobiiRecord> tobiiRecords, List<KadrInTime> kadrInTimes, TabOfKeys tabOfKeys)
+        public List<TobiiRecord> Calculate(List<TobiiRecord> tobiiRecords, List<KadrInTime> kadrInTimes, TabOfKeys tabOfKeys)
         {
-            FZoneList = new List<TobiiRecord>();
+           // FZoneList = new List<TobiiRecord>();
             foreach (var TR in tobiiRecords)
             {
-               
-                string kadr = KadrInTime.GetKadr(kadrInTimes, TR.time_ms, TR.zone);
-                if (kadr == "") continue;
-                int FZone = tabOfKeys.GetFuncZone(TR.zone, kadr);
-                FZoneList.Add(new TobiiRecord() { time_ms = TR.time_ms, zone = FZone });
+                foreach (var zone in TR.zones)
+                    TR.fzones.Add(tabOfKeys.GetFuncZone(zone, "ПИЛ"));
+                
+                TR.fzones = TR.fzones.Distinct().ToList();
+
+                if (TR.fzones.Count() > 1)
+                   if (TR.fzones.Contains(10)) TR.fzones.Remove(10);
+                if(TR.fzones.Count()>0)
+                    TR.CurFZone = TR.fzones.First();
+
+                // string kadr = KadrInTime.GetKadr(kadrInTimes, TR.time_ms, TR.zone);
+                // if (kadr == "") continue;
+                //string kadr = KadrInTime.GetKadr(kadrInTimes, TR.time_ms);
+
+                //int FZone = tabOfKeys.GetFuncZone(TR.zone, kadr);
+                //FZoneList.Add(new TobiiRecord() { time_ms = TR.time_ms, zone = FZone });
             }
+            return tobiiRecords;
         }
 
-        public async void WriteResult(string filename)
+
+
+        public async void WriteResult(string filename, List<TobiiRecord> FZoneList)
         {
             using (StreamWriter writer = File.CreateText(filename))
             {
-                await Task.Run(() => Write(writer));
+                await Task.Run(() => Write(writer, FZoneList));
             }
             GC.Collect();
             GC.WaitForPendingFinalizers();
         }
 
-        void Write(StreamWriter writer)
+        void Write(StreamWriter writer, List<TobiiRecord> FZoneList)
         {
             foreach (var tr in FZoneList)
             {
@@ -47,7 +61,7 @@ namespace TobiiParser
                 time -= sec * 1_000;
                 int msec = (int)Math.Floor(time);
 
-                string s = hour.ToString()+"\t"+min.ToString()+"\t"+sec.ToString()+ "\t" +msec.ToString() +"\t" + tr.zone.ToString();
+                string s = hour.ToString()+"\t"+min.ToString()+"\t"+sec.ToString()+ "\t" +msec.ToString() +"\t" + tr.CurFZone.ToString();
                 writer.WriteLine(s);
             }
         }
