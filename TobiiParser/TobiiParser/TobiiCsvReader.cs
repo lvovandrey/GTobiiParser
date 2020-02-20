@@ -19,7 +19,7 @@ namespace TobiiParser
             char delimiter = '\t';
 
             int N_timestampCol = 0, N_firstZoneCol = 0;
-            int ZoneColCount = 35;
+            int ZoneColCount = 54;
             long i = 0;
             using (StreamReader rd = new StreamReader(new FileStream(filename, FileMode.Open)))
             {
@@ -169,9 +169,24 @@ namespace TobiiParser
         {
             List<TobiiRecord> TRSNew = new List<TobiiRecord>();
             foreach (var tr in tRs)
-                if (tr.CurFZone != GarbageZone || tRs.IndexOf(tr) == 0 || tRs.IndexOf(tr) > tRs.Count - 1 || (tr.time_ms - tRs[tRs.IndexOf(tr) - 1].time_ms > UPBoundFiltrationOfGarbage))
-                    TRSNew.Add(tr);
+            {
+                bool NotGarbage = tr.CurFZone != GarbageZone;
+                bool IsFirst = tRs.IndexOf(tr) == 0;
+                bool IsLast = tRs.IndexOf(tr) > tRs.Count - 1;
+                bool IsPreLast = tRs.IndexOf(tr) > tRs.Count - 2;
 
+                long dt =0;
+                if (!IsLast && !IsPreLast)
+                    dt = tRs[tRs.IndexOf(tr) + 1].time_ms - tr.time_ms;
+                // dt = tr.time_ms - tRs[tRs.IndexOf(tr) - 1].time_ms;
+                bool IsdtMoreUpBound = dt > UPBoundFiltrationOfGarbage;
+
+                if (NotGarbage ||
+                    IsFirst ||
+                    IsLast ||
+                    IsdtMoreUpBound)
+                    TRSNew.Add(tr);
+            }
             return TRSNew;
         }
 

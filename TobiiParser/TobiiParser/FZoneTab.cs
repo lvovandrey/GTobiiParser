@@ -25,13 +25,14 @@ namespace TobiiParser
                    if (TR.fzones.Contains(10)) TR.fzones.Remove(10);
                 if(TR.fzones.Count()>0)
                     TR.CurFZone = TR.fzones.First();
-
+                if (TR.fzones.Count() == 0)
+                    TR.CurFZone = -1;
                 // string kadr = KadrInTime.GetKadr(kadrInTimes, TR.time_ms, TR.zone);
                 // if (kadr == "") continue;
                 //string kadr = KadrInTime.GetKadr(kadrInTimes, TR.time_ms);
 
-                //int FZone = tabOfKeys.GetFuncZone(TR.zone, kadr);
-                //FZoneList.Add(new TobiiRecord() { time_ms = TR.time_ms, zone = FZone });
+                    //int FZone = tabOfKeys.GetFuncZone(TR.zone, kadr);
+                    //FZoneList.Add(new TobiiRecord() { time_ms = TR.time_ms, zone = FZone });
             }
             return tobiiRecords;
         }
