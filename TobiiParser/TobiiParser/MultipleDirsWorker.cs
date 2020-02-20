@@ -54,5 +54,44 @@ namespace TobiiParser
 
             textBox.Text = "Обработка завершена";
         }
+
+        internal static async void RFilesGenerate(string mainDir, TextBox textBox, TextBox Big_textBox)
+        {
+           string[] dirs = Directory.GetDirectories(mainDir, "*", SearchOption.AllDirectories);
+            foreach (var dir in dirs)
+            {
+                string file_csv, file_reg;
+                string[] filescsv = Directory.GetFiles(dir, "*.csv", SearchOption.TopDirectoryOnly);
+                if (filescsv.Count() > 1) { Big_textBox.Text += "В директории " + dir + "       содержится более 1 файла csv" + Environment.NewLine; continue; }
+                else if (filescsv.Count() < 1) { Big_textBox.Text += "В директории " + dir + "          нет файла csv" + Environment.NewLine; continue; }
+                file_csv = filescsv[0];
+                file_reg = file_csv.Replace(".csv", "_r.txt");
+
+                textBox.Text = "Обрабатываю " + dir;
+                await Task.Run(() => RFilesGenerateInDirectory(dir, file_csv, file_reg));
+            }
+
+            textBox.Text = "Обработка завершена";
+        }
+
+        private static async void RFilesGenerateInDirectory(string dir, string file_csv, string file_reg)
+        {
+            TobiiCsvReader tobiiCsvReader = new TobiiCsvReader();
+            List<Interval> Intervals = new List<Interval>();
+            tobiiCsvReader.TobiiIntervalRead(file_csv, Intervals);
+            List<TobiiRecord> FiltredTobiiList = tobiiCsvReader.CompactTobiiRecords(tobiiRecords);
+            TabOfKeys tabOfKeys = ExcelReader.ReadTabOfKeys(tab2File);
+            List<KadrInTime> kadrInTimes = ExcelReader.ReadKadrSets(file_k);
+            FZoneTab fZoneTab = new FZoneTab();
+            List<TobiiRecord> FZoneList = fZoneTab.Calculate(FiltredTobiiList, kadrInTimes, tabOfKeys);
+            FZoneList = tobiiCsvReader.ClearFromGarbageZone(FZoneList, -1, 500);
+            FZoneList = tobiiCsvReader.CompactTobiiRecords(FZoneList, "FZones");
+
+            fZoneTab.WriteResult(file_csv.Replace(".csv", ".txt"), FZoneList);
+
+            List<Interval> intervals = ExcelReader.SeparatorIntervalsReadFromExcel(file_reg);
+            ResultSeparator resultSeparator = new ResultSeparator(dir + @"\reg\", intervals, FZoneList, Path.GetFileName(file_csv).Replace(".csv", "_"));
+            resultSeparator.Separate();
+        }
     }
 }

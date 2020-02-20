@@ -26,6 +26,7 @@
         <Button Content="Добавить суффикс txt+UID" HorizontalAlignment="Left" Margin="10,206,0,0" VerticalAlignment="Top" Width="155" Click="RenameAndAddSufficsAndUID"/>
         <TextBox x:Name="TextBoxRename" HorizontalAlignment="Left" Height="23" Margin="170,206,0,0" TextWrapping="Wrap" Text="Колков" VerticalAlignment="Top" Width="218"/>
         <Button Content="Перечень файлов вывести " HorizontalAlignment="Left" Margin="10,256,0,0" VerticalAlignment="Top" Width="155" Click="Button_Click_7"/>
+        <Button Content="Генерировать r-файлы" HorizontalAlignment="Left" Margin="10,100,0,0" VerticalAlignment="Top" Width="155" Click="R_filesGenerateButtonClick" />
 
     </Grid>
 </Window>

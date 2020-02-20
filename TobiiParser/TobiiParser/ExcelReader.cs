@@ -130,5 +130,9 @@ namespace TobiiParser
             return intervals;
         }
 
+        internal static void R_filesGenerate(string text)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

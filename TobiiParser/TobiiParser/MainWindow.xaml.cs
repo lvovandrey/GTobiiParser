@@ -151,6 +151,9 @@ namespace TobiiParser
             ExcelReader.ReadTabOfKeys(@"C:\_\Tab2new2.xlsx");
         }
 
-
+        private void R_filesGenerateButtonClick(object sender, RoutedEventArgs e)
+        {
+            MultipleDirsWorker.RFilesGenerate(TextBoxTarget.Text, this.TextBoxCurDir, this.TextBox1); 
+        }
     }
 }
