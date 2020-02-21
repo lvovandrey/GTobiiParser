@@ -14,7 +14,7 @@ namespace TobiiParser
 
         public void TobiiCSCRead(string filename, List<TobiiRecord> tobiiList)
         {
-            
+
             char separator = '\n';
             char delimiter = '\t';
 
@@ -28,7 +28,7 @@ namespace TobiiParser
                 N_timestampCol = SearchColFirst(first_string_arr, "Recording timestamp");
                 N_firstZoneCol = SearchColFirst(first_string_arr, "AOI hit [");
 
-                bool EndOfFile=false;
+                bool EndOfFile = false;
                 while (!EndOfFile)
                 {
                     string[] str_arr = { "" };
@@ -56,12 +56,75 @@ namespace TobiiParser
 
                 FiltredTobiiList = CompactTobiiRecords(tobiiList);
             }
-
-
-
-
-
         }
+
+
+        internal List<Interval> TobiiIntervalRead(string file_csv)
+        {
+
+            List<Interval> intervals = new List<Interval>();
+
+            char separator = '\n';
+            char delimiter = '\t';
+
+            int N_timestampCol = 0, N_eventsCol = 0;
+            long i = 0;
+            using (StreamReader rd = new StreamReader(new FileStream(file_csv, FileMode.Open)))
+            {
+                string[] first_string_arr = { "" };
+                first_string_arr = rd.ReadLine().Split(delimiter);
+                N_timestampCol = SearchColFirst(first_string_arr, "Recording timestamp");
+                N_eventsCol = SearchColFirst(first_string_arr, "Event");
+
+                bool EndOfFile = false;
+                while (!EndOfFile)
+                {
+                    string[] str_arr = { "" };
+                    string big_str = "";
+                    EndOfFile = ReadPartOfFile(rd, out big_str);
+
+                    str_arr = big_str.Split(separator);
+                    foreach (string s in str_arr)
+                    {
+                        string[] tmp = { "" };
+                        i++;
+                        tmp = s.Split(delimiter);
+                        if (tmp.Count() < 3) continue;
+
+                        //ищем строчку 
+                        //if (tmp[N_eventsCol] == "Logged live Event")
+                        string EventName = tmp[N_eventsCol];
+                        if (EventName != "" &&
+                            EventName != "RecordingStart" &&
+                            EventName != "SyncPortOutHigh" &&
+                            EventName != "SyncPortOutLow" &&
+                            EventName != "RecordingEnd" &&
+                            EventName != "RecordingPause" &&
+                            !EventName.Contains("IntervalStart") &&
+                            !EventName.Contains("IntervalEnd")
+                            )
+                        {
+                            long TimeBeg = 0;
+                            long TimeEnd = 0;
+
+                            if (!long.TryParse(tmp[N_timestampCol], out TimeBeg))
+                                throw new Exception("Не могу преобразовать в timestamp строку  " + tmp[N_timestampCol]);
+
+                            TimeEnd = TimeBeg + 30000;
+                            if (intervals.Count > 0) intervals.Last().Time_ms_end = TimeBeg;
+
+                            Interval interval = new Interval(tmp[N_eventsCol], TimeBeg, TimeEnd);
+                            intervals.Add(interval);
+                        }
+                    }
+
+                }
+
+            }
+
+            return intervals;
+        }
+
 
         bool ReadPartOfFile(StreamReader rd, out string str)
         {
@@ -70,7 +133,7 @@ namespace TobiiParser
             for (int i = 0; i <= 10000; i++)
             {
                 string s = rd.ReadLine();
-                if (s == null) { endOfFile = true; break;  }
+                if (s == null) { endOfFile = true; break; }
                 sb.Append(s);
                 sb.Append("\n");
             }
@@ -93,14 +156,14 @@ namespace TobiiParser
                 if (s == null) continue;
                 if (s.IndexOf(colName) > -1)
                 {
-                    zones.Add(ii+1);
+                    zones.Add(ii + 1);
                 }
                 ii++;
             }
             return zones;
         }
 
-        int SearchColFirst(string[] row, string colName )
+        int SearchColFirst(string[] row, string colName)
         {
             int ii = 0;
             bool find = false;
@@ -120,12 +183,12 @@ namespace TobiiParser
         {
             if (a.Count() != b.Count) return false;
             for (int i = 0; i < a.Count; i++)
-                if (a[i] != b[i])  return false;
+                if (a[i] != b[i]) return false;
             return true;
         }
 
         //Убираем повторы из записи тоби - компактифицируем ее
-        public List<TobiiRecord> CompactTobiiRecords(List<TobiiRecord> tRs, string mode="MultZones")
+        public List<TobiiRecord> CompactTobiiRecords(List<TobiiRecord> tRs, string mode = "MultZones")
         {
             if (mode == "FZones")
             {
@@ -146,7 +209,7 @@ namespace TobiiParser
                 List<TobiiRecord> TRSNew = new List<TobiiRecord>();
                 List<int> ZonesBefore = tRs[0].zones;
 
-                for (int i = 1; i<tRs.Count;i++)
+                for (int i = 1; i < tRs.Count; i++)
                 {
                     var tr = tRs[i];
                     if (!IsEqual(tr.zones, ZonesBefore))
@@ -159,7 +222,7 @@ namespace TobiiParser
             }
             else
                 throw new Exception("CompactTobiiRecords - нет варианта с параметром mode = " + mode);
-        
+
 
         }
 
@@ -175,7 +238,7 @@ namespace TobiiParser
                 bool IsLast = tRs.IndexOf(tr) > tRs.Count - 1;
                 bool IsPreLast = tRs.IndexOf(tr) > tRs.Count - 2;
 
-                long dt =0;
+                long dt = 0;
                 if (!IsLast && !IsPreLast)
                     dt = tRs[tRs.IndexOf(tr) + 1].time_ms - tr.time_ms;
                 // dt = tr.time_ms - tRs[tRs.IndexOf(tr) - 1].time_ms;
