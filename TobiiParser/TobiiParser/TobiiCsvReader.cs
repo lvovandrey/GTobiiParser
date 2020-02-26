@@ -19,7 +19,7 @@ namespace TobiiParser
             char delimiter = '\t';
 
             int N_timestampCol = 0, N_firstZoneCol = 0;
-            int ZoneColCount = 54;
+            int ZoneColCount = 53;
             long i = 0;
             using (StreamReader rd = new StreamReader(new FileStream(filename, FileMode.Open)))
             {
@@ -47,8 +47,12 @@ namespace TobiiParser
                             throw new Exception("Не могу преобразовать в timestamp строку  " + tmp[N_timestampCol]);
 
                         string[] Hits = new string[tmp.Count()];
-                        Array.Copy(tmp, N_firstZoneCol, Hits, 0, ZoneColCount);
-                        TR.zones = SearchCol(Hits, "1");
+                        try{
+                            Array.Copy(tmp, N_firstZoneCol, Hits, 0, ZoneColCount);
+                        }
+                        catch
+                        { Console.WriteLine("!!!"); }
+                            TR.zones = SearchCol(Hits, "1");
                         tobiiList.Add(TR);
                     }
 
@@ -76,6 +80,8 @@ namespace TobiiParser
                 N_timestampCol = SearchColFirst(first_string_arr, "Recording timestamp");
                 N_eventsCol = SearchColFirst(first_string_arr, "Event");
 
+                long RecordingEndTime = 0;
+
                 bool EndOfFile = false;
                 while (!EndOfFile)
                 {
@@ -91,9 +97,14 @@ namespace TobiiParser
                         tmp = s.Split(delimiter);
                         if (tmp.Count() < 3) continue;
 
-                        //ищем строчку 
-                        //if (tmp[N_eventsCol] == "Logged live Event")
                         string EventName = tmp[N_eventsCol];
+                        
+                        if (EventName == "RecordingEnd")
+                        {
+                            if (!long.TryParse(tmp[N_timestampCol], out RecordingEndTime))
+                                throw new Exception("Не могу преобразовать в timestamp строку  " + tmp[N_timestampCol]);
+                        }
+
                         if (EventName != "" &&
                             EventName != "RecordingStart" &&
                             EventName != "SyncPortOutHigh" &&
@@ -120,13 +131,18 @@ namespace TobiiParser
 
                 }
 
+                if (RecordingEndTime != 0 &&
+                    intervals.Last().Time_ms_end > RecordingEndTime)
+                    intervals.Last().Time_ms_end = RecordingEndTime-1000;
+                
+
             }
 
             return intervals;
         }
 
 
-        bool ReadPartOfFile(StreamReader rd, out string str)
+        public static bool ReadPartOfFile(StreamReader rd, out string str)
         {
             bool endOfFile = false;
             StringBuilder sb = new StringBuilder();

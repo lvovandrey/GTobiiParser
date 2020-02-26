@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 using Excel = Microsoft.Office.Interop.Excel;
 
 namespace TobiiParser
@@ -21,7 +23,7 @@ namespace TobiiParser
             Excel.Worksheet xlSht; //лист Excel   
             xlWB = xlApp.Workbooks.Open(FileName); //название файла Excel                                             
             xlSht = xlWB.Worksheets[1]; //название листа или 1-й лист в книге xlSht = xlWB.Worksheets[1];
-            
+
 
 
             int iLastRow = xlSht.Cells[xlSht.Rows.Count, "B"].End[Excel.XlDirection.xlUp].Row;  //последняя заполненная строка в столбце А      
@@ -52,6 +54,15 @@ namespace TobiiParser
             }
             return kadrInTimes;
         }
+
+        public static List<KadrInTime> GenerateKadrSets(string kadrDefault)
+        {
+            List<KadrInTime> kadrInTimes = new List<KadrInTime>();
+            KadrInTime K = new KadrInTime(kadrDefault, kadrDefault, kadrDefault, "левый", 0, 86_400_000);
+            kadrInTimes.Add(K);
+            return kadrInTimes;
+        }
+
 
 
         public static TabOfKeys ReadTabOfKeys(string FileName)
@@ -129,6 +140,70 @@ namespace TobiiParser
             }
             return intervals;
         }
+
+        internal static List<Interval> SeparatorIntervalsReadFromUnionTxt(string file_reg, string file_csv)
+        {
+            List<Interval> intervals = new List<Interval>();
+
+            char separator = '\n';
+            char delimiter = '\t';
+
+            using (StreamReader rd = new StreamReader(new FileStream(file_reg, FileMode.Open)))
+            {
+                string[] first_string_arr = { "" };
+
+                string[] str_arr = { "" };
+                string big_str = "";
+                TobiiCsvReader.ReadPartOfFile(rd, out big_str); // TODO: я расчитываю что файл режимов будет меньше 10000 строк
+                str_arr = big_str.Split(separator);
+
+                int RowFirst = 0, RowLast = 0, i = 0;
+
+                for (i = 0; i < str_arr.Length; i++)
+                {
+                    string[] tmp = { "" };
+                    tmp = str_arr[i].Split(delimiter);
+
+                    if (tmp[0].Contains(file_csv))
+                    {
+                        int j;
+                        RowFirst = i+1;
+                        for (j = RowFirst; j < str_arr.Length; j++)
+                        {
+                            string[] tmp2 = { "" };
+                            tmp2 = str_arr[j].Split(delimiter);
+                            if (tmp2[0] == "")
+                            {
+                                RowLast = j - 1;
+                                break;
+                            }
+                        }
+                        break;
+                    }
+                }
+
+                for (i = RowFirst; i <= RowLast; i++)
+                {
+                    string[] tmp = { "" };
+                    tmp = str_arr[i].Split(delimiter);
+                    string Name = tmp[0].Trim();
+                    long TimeBeg = 0;
+                    long TimeEnd = 0;
+                    if (!long.TryParse(tmp[1], out TimeBeg)) { MessageBox.Show(" SeparatorIntervalsReadFromUnionTxt - не парсится время " + tmp[1]); return null; }
+                    if (!long.TryParse(tmp[2], out TimeEnd)) { MessageBox.Show(" SeparatorIntervalsReadFromUnionTxt - не парсится время " + tmp[1]); return null; }
+
+                    Interval interval = new Interval(Name, TimeBeg, TimeEnd);
+                    intervals.Add(interval);
+                }
+            }
+            return intervals;
+        }
+
+
+
+
+
+
 
         internal static void R_filesGenerate(string text)
         {
