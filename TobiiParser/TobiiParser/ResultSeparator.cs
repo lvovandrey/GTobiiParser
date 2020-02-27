@@ -39,8 +39,8 @@ namespace TobiiParser
             foreach (var interval in intervals)
             {
                 long time = interval.Time_ms_beg;
-                string s = interval.Name.ToString() + "\t" 
-                    + interval.Time_ms_beg.ToString() + "\t" 
+                string s = interval.Name.ToString() + "\t"
+                    + interval.Time_ms_beg.ToString() + "\t"
                     + interval.Time_ms_end.ToString();
                 writer.WriteLine(s);
             }
@@ -51,7 +51,7 @@ namespace TobiiParser
             using (StreamWriter writer = new StreamWriter(File.Open(filename, FileMode.Append)))
             {
                 writer.WriteLine();
-                if(Header!="") writer.WriteLine(Header);
+                if (Header != "") writer.WriteLine(Header);
                 await Task.Run(() => Write(writer, intervals));
             }
             GC.Collect();
@@ -76,14 +76,55 @@ namespace TobiiParser
         public void Separate()
         {
             List<List<TobiiRecord>> SuperList = new List<List<TobiiRecord>>();
+
             foreach (var TR in tobiiRecords)
             {
                 foreach (var interval in intervals)
                 {
                     if (TR.time_ms >= interval.Time_ms_beg && TR.time_ms <= interval.Time_ms_end)
-                        interval.records.Add(TR);
+                    {
+                        if (interval.records.Count() == 0)//Ставим первую фиксацию разрезав предыдущую
+                        {
+                            int TRindex = tobiiRecords.IndexOf(TR);
+                            if (TRindex != 0)
+                            {
+                                TobiiRecord TRfirst = new TobiiRecord(tobiiRecords[TRindex - 1]);
+                                TRfirst.time_ms = interval.Time_ms_beg;
+                                interval.records.Add(TRfirst);
+                            }
+                        }
+
+                        interval.records.Add(TR); //Ставим саму фиксацию
+                    }
+                }
+                foreach (var interval in intervals) //Если в пределах одной фиксации помещается весь интервал - надо найти эту фиксацию
+                {
+                    if (interval.records.Count() == 0)
+                    {
+                        int i = 0;
+                        for (i = 1; i < tobiiRecords.Count; i++)
+                        {
+                            if (tobiiRecords[i].time_ms > interval.Time_ms_beg) //ищем первую фиксацию, который началась после начала интервала
+                            {
+                                TobiiRecord TRPrev = new TobiiRecord(tobiiRecords[i - 1]); // и берем предыдущую
+                                if (tobiiRecords[i - 1].time_ms < interval.Time_ms_beg)    // если предыдущая фиксация - до начала интервала началась
+                                    TRPrev.time_ms = interval.Time_ms_beg;                 // считаем что фиксация все таки началась с началом интервала
+
+                                interval.records.Add(TRPrev);
+                                break;                                                     // одну добавили - и хватить
+                            }
+                        }
+                    }
                 }
             }
+
+            foreach (var interval in intervals) // Всем раздаем по заглушке в конце интервала - по пустой фиксации.
+            {
+                TobiiRecord TR = new TobiiRecord();
+                TR.time_ms = interval.Time_ms_end + 10;
+                interval.records.Add(TR);
+            }
+
             DirectoryInfo di = new DirectoryInfo(DirectoryForFiles);
             if (!di.Exists) di.Create();
 

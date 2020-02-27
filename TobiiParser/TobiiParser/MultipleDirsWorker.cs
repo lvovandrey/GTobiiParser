@@ -97,7 +97,7 @@ namespace TobiiParser
            
             FZoneTab fZoneTab = new FZoneTab();
             List<TobiiRecord> FZoneList = fZoneTab.Calculate(FiltredTobiiList, kadrInTimes, tabOfKeys);
-            FZoneList = tobiiCsvReader.ClearFromGarbageZone(FZoneList, -1, 500);
+            FZoneList = tobiiCsvReader.ClearFromGarbageZone(FZoneList, -1, 100);
             FZoneList = tobiiCsvReader.CompactTobiiRecords(FZoneList, "FZones");
 
             fZoneTab.WriteResult(file_csv.Replace(".csv", ".txt"), FZoneList);

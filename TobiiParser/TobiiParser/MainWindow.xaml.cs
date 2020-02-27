@@ -38,6 +38,14 @@ namespace TobiiParser
             fzones = new List<int>();
             CurFZone = -1;
         }
+
+        public TobiiRecord(TobiiRecord TR)
+        {
+            time_ms = TR.time_ms;
+            zones = TR.zones;
+            fzones = TR.fzones;
+            CurFZone = TR.CurFZone;
+        }
     }
     public partial class MainWindow : Window
     {

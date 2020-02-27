@@ -20,9 +20,9 @@ namespace TobiiParser
                     TR.fzones.Add(tabOfKeys.GetFuncZone(zone, "ПИЛ"));
                 
                 TR.fzones = TR.fzones.Distinct().ToList();
-
+                
                 if (TR.fzones.Count() > 1)
-                   if (TR.fzones.Contains(10)) TR.fzones.Remove(10);
+                   if (TR.fzones.Contains(13)) TR.fzones.Remove(13);
                 if(TR.fzones.Count()>0)
                     TR.CurFZone = TR.fzones.First();
                 if (TR.fzones.Count() == 0)
