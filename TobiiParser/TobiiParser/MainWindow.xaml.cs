@@ -165,5 +165,10 @@ namespace TobiiParser
         {
             MultipleDirsWorker.RFilesGenerate(TextBoxTarget.Text, this.TextBoxCurDir, this.TextBox1); 
         }
+
+        private void Button_Click_2(object sender, RoutedEventArgs e)
+        {
+            SpecialFor9_41.SortAndUnionFilesInDirs_SpecialFor9_41(TextBoxTarget.Text, TextBoxTarget_Copy.Text);
+        }
     }
 }

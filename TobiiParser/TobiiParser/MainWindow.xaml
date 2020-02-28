@@ -30,5 +30,8 @@
         <TextBox x:Name="TextBoxKadrDefault" HorizontalAlignment="Left"  Height="23" Margin="314,136,0,0" TextWrapping="Wrap" Text="ПИЛ" VerticalAlignment="Top" Width="107"/>
         <Label Content="Кадр по умолчанию" HorizontalAlignment="Left" Margin="314,112,0,0" VerticalAlignment="Top"/>
 
+
+        <Button Content="9.41 - слепить СП по парам " HorizontalAlignment="Left" Margin="10,256,0,0" VerticalAlignment="Top" Width="155" Click="Button_Click_2" />
+
     </Grid>
 </Window>

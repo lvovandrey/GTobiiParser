@@ -104,6 +104,7 @@
     <Compile Include="KadrInTime.cs" />
     <Compile Include="MultipleDirsWorker.cs" />
     <Compile Include="ResultSeparator.cs" />
+    <Compile Include="SpecialFor9_41.cs" />
     <Compile Include="TabOfKeys.cs" />
     <Compile Include="TobiiCsvReader.cs" />
     <Page Include="MainWindow.xaml">

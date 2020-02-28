@@ -71,7 +71,7 @@ namespace TobiiParser
                     {
 
                         string ext = Path.GetExtension(filepath);
-                        string newfilepath = filepath.Replace( ext, "_"+ suffics+"_" + R.Next(100000, 999999).ToString() + ext);
+                        string newfilepath = filepath.Replace(ext, "_" + suffics + "_" + R.Next(100000, 999999).ToString() + ext);
                         FileInfo fi = new FileInfo(filepath);
                         fi.MoveTo(newfilepath);
                     }
@@ -100,8 +100,8 @@ namespace TobiiParser
                     {
 
                         string ext = Path.GetExtension(filepath);
-                        string path = filepath.Replace(Path.GetFileName(filepath), "").Replace(mainDir,"").Replace(@"\", "_");
-                        string newfilepath = filepath.Replace(ext, "_" + suffics +"_"+ path + "_" + R.Next(100000, 999999).ToString() + ext);
+                        string path = filepath.Replace(Path.GetFileName(filepath), "").Replace(mainDir, "").Replace(@"\", "_");
+                        string newfilepath = filepath.Replace(ext, "_" + suffics + "_" + path + "_" + R.Next(100000, 999999).ToString() + ext);
                         FileInfo fi = new FileInfo(filepath);
                         fi.MoveTo(newfilepath);
                     }
@@ -116,7 +116,7 @@ namespace TobiiParser
 
         internal static void OutFilepaths(string mainDir, TextBox textBox)
         {
-          
+
 
             string[] dirs = Directory.GetDirectories(mainDir, "*", SearchOption.AllDirectories);
             foreach (var dir in dirs)
@@ -131,7 +131,7 @@ namespace TobiiParser
                         System.IO.FileInfo file = new System.IO.FileInfo(filepath);
                         long size = file.Length;
 
-                        textBox.Text+= filepath.Replace(mainDir,"") + "\t" + size.ToString() + "\t" + Path.GetExtension(filepath).Replace(".", "") + System.Environment.NewLine;
+                        textBox.Text += filepath.Replace(mainDir, "") + "\t" + size.ToString() + "\t" + Path.GetExtension(filepath).Replace(".", "") + System.Environment.NewLine;
                     }
                     catch (Exception e)
                     {
@@ -142,5 +142,10 @@ namespace TobiiParser
             }
         }
 
+
+
+      
     }
+
 }
+
