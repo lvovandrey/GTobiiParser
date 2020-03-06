@@ -171,10 +171,12 @@ namespace TobiiParser
 
 
 
-        class TxtFileResult
+        public class TxtFileResult
         {
             public List<TobiiRecord> tobiiRecords = new List<TobiiRecord>();
             public List<string> tags = new List<string>();
+            public string OrderNumber;
+            public string filename;
 
         }
 
@@ -202,6 +204,10 @@ namespace TobiiParser
                 string dirToTagsTmp = dir.Replace(mainDir, "");
                 txtFileResult.tags = dirToTagsTmp.Split(separatorDirs).ToList();
 
+                int N_pos = filepath.IndexOf("№"); // ищем позицию номера 
+                txtFileResult.OrderNumber = filepath.Substring(N_pos, 3);     
+
+                txtFileResult.filename = filepath;
 
 
                 using (StreamReader rd = new StreamReader(new FileStream(fullfilepath, FileMode.Open)))
@@ -212,7 +218,7 @@ namespace TobiiParser
                     TobiiCsvReader.ReadPartOfFile(rd, out big_str); // TODO: я расчитываю что файл режимов будет меньше 10000 строк
                     str_arr = big_str.Split(separator);
 
-                    int RowFirst = 0, RowLast = 0, i = 0;
+                    int  i = 0;
 
                     for (i = 0; i < str_arr.Length; i++)
                     {
@@ -225,10 +231,106 @@ namespace TobiiParser
                         txtFileResult.tobiiRecords.Add(new TobiiRecord() { time_ms = timeInMs, CurFZone = int.Parse(tmp[4]) });
 
                     }
-                    
+
 
                 }
                 txtFileResults.Add(txtFileResult);
+            }
+
+            WriteTxtFileResultAsync(@"C:\_\1.csv", txtFileResults);
+
+        }
+
+
+            //Файл ZonesInterpretation.txt у меня такого формата
+            //  -1	    ?
+            //  0	    ?
+            //  1	    Курс
+            //  2	    АГ
+            //  3	    Вариометр
+            //  4	    Внекаб.обст.
+            //  5 	    Высота
+            //  6	    Перегрузка
+            //  7	    Скорость
+            //  8	    Угол атаки
+            //  9	    ПЛТ другое
+            //  10	    ИКШ-Скорость
+            //  11	    ИКШ-Высота
+            //  12	    ИКШ-Авиагоризонт
+            //  13	    Другое
+
+            /// <summary>
+            /// Читает файл с интерпретацией зон - перевод номеров зон в их названия
+            /// </summary>
+            /// <param name="filename"></param>
+            /// <returns></returns>
+        public static Dictionary<string, string> ReadZonesInterpretation(string filename)
+        {
+            Dictionary<string, string> ZonesInterpretation = new Dictionary<string, string>();
+            using (StreamReader rd = new StreamReader(new FileStream(filename, FileMode.Open)))
+            {
+                char separator = '\n';
+                char delimiter = '\t';
+                string[] str_arr = { "" };
+                string big_str = "";
+                TobiiCsvReader.ReadPartOfFile(rd, out big_str); 
+                str_arr = big_str.Split(separator);
+
+                int i = 0;
+                for (i = 0; i < str_arr.Length; i++)
+                {
+                    if (str_arr[i] == "") continue;
+                    string[] tmp = { "" };
+                    tmp = str_arr[i].Split(delimiter);
+
+                    ZonesInterpretation.Add(tmp[0], tmp[1]);
+                }
+            }
+            return ZonesInterpretation;
+        }
+
+
+        public static async void WriteTxtFileResultAsync(string filename, List<TxtFileResult> TxtFileResults)
+        {
+            using (StreamWriter writer = new StreamWriter(new FileStream(filename, FileMode.OpenOrCreate, FileAccess.Write), Encoding.Unicode))
+            {
+                await Task.Run(() => WriteTxtFileResult(writer, TxtFileResults));
+            }
+            GC.Collect();
+            GC.WaitForPendingFinalizers();
+        }
+
+        static void WriteTxtFileResult(StreamWriter writer, List<TxtFileResult> TxtFileResults)
+        {
+            Dictionary<string, string> ZonesInterpretation = ReadZonesInterpretation(@"C:\_\ZonesInterpretation.txt");
+            foreach (var r in TxtFileResults)
+            {
+
+                long timeBegin = r.tobiiRecords.First().time_ms;
+                foreach (var tr in r.tobiiRecords)
+                {
+                    string s = "";
+                    foreach (var tag in r.tags)
+                        s += tag + "\t";
+                    s+=r.OrderNumber + "\t";
+                    s += r.filename + "\t";
+                    s += (r.tobiiRecords.IndexOf(tr) + 1).ToString() + "\t";
+                    s += tr.CurFZone + "\t";
+                    s += ZonesInterpretation[tr.CurFZone.ToString()] + "\t";
+                    s += (tr.time_ms- timeBegin) + "\t";
+
+                    if (r.tobiiRecords.IndexOf(tr) + 1 >= r.tobiiRecords.Count())
+                    {
+                        s += "-------";
+                        writer.WriteLine(s);
+                        break;
+                    }
+                    long nextTime = r.tobiiRecords[r.tobiiRecords.IndexOf(tr) + 1].time_ms;
+                    s += (nextTime - tr.time_ms).ToString();
+
+                    writer.WriteLine(s);
+                }
+                writer.WriteLine("");
             }
         }
     }
