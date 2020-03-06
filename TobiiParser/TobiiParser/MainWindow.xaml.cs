@@ -24,29 +24,6 @@ namespace TobiiParser
     /// </summary>
     /// 
 
-    public class TobiiRecord
-    {
-        public long time_ms;
-        public List<int> zones;
-        public List<int> fzones;
-        public int CurFZone;
-
-        public TobiiRecord()
-        {
-            time_ms = 0;
-            zones = new List<int>();
-            fzones = new List<int>();
-            CurFZone = -1;
-        }
-
-        public TobiiRecord(TobiiRecord TR)
-        {
-            time_ms = TR.time_ms;
-            zones = TR.zones;
-            fzones = TR.fzones;
-            CurFZone = TR.CurFZone;
-        }
-    }
     public partial class MainWindow : Window
     {
         public MainWindow()
@@ -169,6 +146,26 @@ namespace TobiiParser
         private void Button_Click_2(object sender, RoutedEventArgs e)
         {
             SpecialFor9_41.SortAndUnionFilesInDirs_SpecialFor9_41(TextBoxTarget.Text, TextBoxTarget_Copy.Text);
+        }
+
+        private void Button_Click_8(object sender, RoutedEventArgs e)
+        {
+            string[] dirs = Directory.GetDirectories(TextBoxTarget.Text,"*", SearchOption.TopDirectoryOnly);
+            foreach (var dir in dirs)
+            {
+                SpecialFor9_41.SortAndUnionFilesInDirsOnSP_SpecialFor9_41(dir);
+            }
+        }
+
+        private void Button_Click_9(object sender, RoutedEventArgs e)
+        {
+            SpecialFor9_41.SortAndUnionFilesInDirsOnPilotName_SpecialFor9_41(TextBoxTarget.Text);
+        }
+
+
+        private void MenuItem_Click_1(object sender, RoutedEventArgs e)
+        {
+            SpecialFor9_41.ParseAllTxtToUnionTable(TextBoxTarget.Text);
         }
     }
 }

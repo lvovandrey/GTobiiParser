@@ -107,6 +107,7 @@
     <Compile Include="SpecialFor9_41.cs" />
     <Compile Include="TabOfKeys.cs" />
     <Compile Include="TobiiCsvReader.cs" />
+    <Compile Include="TobiiRecord.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>

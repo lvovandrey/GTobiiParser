@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 
 namespace TobiiParser
 {
@@ -34,7 +35,7 @@ namespace TobiiParser
                 int EXT_pos1 = filepath1.IndexOf(".txt");      //ищем позицию расширения
                 string SP_subs1 = filepath1.Substring(SP_pos1 + 2, EXT_pos1 - SP_pos1 - 2); //XX     берем номер сложного положения
 
-                string NewDirName = Path.Combine(targetDir, Regim_subs1 + "СП" + SP_subs1);      
+                string NewDirName = Path.Combine(targetDir, Regim_subs1 + "СП" + SP_subs1);
                 string NewFile1Name = Path.Combine(NewDirName, filepath1);
 
                 if (!Directory.Exists(NewDirName))
@@ -70,6 +71,164 @@ namespace TobiiParser
                     }
                 }
 
+            }
+        }
+
+        /// <summary>
+        /// Сортировка файлов по папкам по признаку сложных положений - для 9.41 делаем. Поиск файлов для сортировки ведется только внутри указанной директории - без захода во вложенные директории
+        /// </summary>
+        /// <param name="mainDir"></param>
+        internal static void SortAndUnionFilesInDirsOnSP_SpecialFor9_41(string mainDir)
+        {
+
+            string[] files = Directory.GetFiles(mainDir, "*.txt", SearchOption.TopDirectoryOnly);
+            List<string> SPNames = new List<string>()
+            {
+                "СП 1",
+                "СП 2",
+                "СП 3",
+                "СП 4",
+                "СП 5",
+                "СП 6",
+                "СП 7",
+                "СП 8",
+                "СП 9",
+                "СП 10"
+            };
+
+            foreach (string fullfilepath in files)
+            {
+                if (!File.Exists(fullfilepath)) continue;
+
+                string filepath = Path.GetFileName(fullfilepath);
+
+                foreach (var SPName in SPNames)
+                {
+                    if (filepath.Contains(SPName + ".txt"))
+                    {
+                        string NewDirPath = Path.Combine(mainDir, SPName);
+                        if (!Directory.Exists(NewDirPath))
+                            Directory.CreateDirectory(NewDirPath);
+                        string NewFileName = Path.Combine(NewDirPath, filepath);
+                        FileInfo fi = new FileInfo(fullfilepath);
+                        fi.MoveTo(NewFileName);
+                        break;
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Сортировка файлов по папкам по признаку Фамилия летчика - для 9.41 делаем. Поиск файлов для сортировки ведется только внутри указанной директории - без захода во вложенные директории
+        /// </summary>
+        /// <param name="mainDir"></param>
+        internal static void SortAndUnionFilesInDirsOnPilotName_SpecialFor9_41(string mainDir)
+        {
+
+            string[] files = Directory.GetFiles(mainDir, "*.txt", SearchOption.AllDirectories);
+
+            List<string> Pilots = new List<string>()
+            {
+                "Петруша",
+                "Коноваленко",
+                "Рыков",
+                "Виноградов",
+                "Скоромнов",
+                "Журавлев"
+            };
+
+            foreach (string fullfilepath in files)
+            {
+                if (!File.Exists(fullfilepath)) continue;
+
+                string filepath = Path.GetFileName(fullfilepath);
+                string dir = Path.GetDirectoryName(fullfilepath);
+
+                bool isFind = false;
+                foreach (var Pilot in Pilots)
+                {
+                    if (filepath.Contains(Pilot))
+                    {
+                        string NewDirPath = Path.Combine(dir, Pilot);
+                        if (!Directory.Exists(NewDirPath))
+                            Directory.CreateDirectory(NewDirPath);
+                        string NewFileName = Path.Combine(NewDirPath, filepath);
+                        FileInfo fi = new FileInfo(fullfilepath);
+                        fi.MoveTo(NewFileName);
+                        isFind = true;
+                        break;
+                    }
+                }
+                if (!isFind)
+                {
+                    MessageBox.Show("Не найдена фамилия в файле " + fullfilepath);
+                    Console.WriteLine(fullfilepath);
+                }
+            }
+        }
+
+
+
+
+
+        class TxtFileResult
+        {
+            public List<TobiiRecord> tobiiRecords = new List<TobiiRecord>();
+            public List<string> tags = new List<string>();
+
+        }
+
+
+        internal static void ParseAllTxtToUnionTable(string mainDir)
+        {
+            List<TxtFileResult> txtFileResults = new List<TxtFileResult>();
+
+            string[] files = Directory.GetFiles(mainDir, "*.txt", SearchOption.AllDirectories);
+
+
+
+            foreach (string fullfilepath in files)
+            {
+                char separator = '\n';
+                char delimiter = '\t';
+                char separatorDirs = '\\';
+
+                TxtFileResult txtFileResult = new TxtFileResult();
+
+                string filepath = Path.GetFileName(fullfilepath);
+                string dir = Path.GetDirectoryName(fullfilepath);
+
+
+                string dirToTagsTmp = dir.Replace(mainDir, "");
+                txtFileResult.tags = dirToTagsTmp.Split(separatorDirs).ToList();
+
+
+
+                using (StreamReader rd = new StreamReader(new FileStream(fullfilepath, FileMode.Open)))
+                {
+
+                    string[] str_arr = { "" };
+                    string big_str = "";
+                    TobiiCsvReader.ReadPartOfFile(rd, out big_str); // TODO: я расчитываю что файл режимов будет меньше 10000 строк
+                    str_arr = big_str.Split(separator);
+
+                    int RowFirst = 0, RowLast = 0, i = 0;
+
+                    for (i = 0; i < str_arr.Length; i++)
+                    {
+                        if (str_arr[i] == "") continue;
+                        string[] tmp = { "" };
+                        tmp = str_arr[i].Split(delimiter);
+                        int timeInMs = int.Parse(tmp[0]) * 3_600_000 + int.Parse(tmp[1]) * 60_000 + int.Parse(tmp[2]) * 1000 + int.Parse(tmp[3]);
+                        TimeSpan timeOfCurFixation = TimeSpan.FromMilliseconds(timeInMs);
+
+                        txtFileResult.tobiiRecords.Add(new TobiiRecord() { time_ms = timeInMs, CurFZone = int.Parse(tmp[4]) });
+
+                    }
+                    
+
+                }
+                txtFileResults.Add(txtFileResult);
             }
         }
     }

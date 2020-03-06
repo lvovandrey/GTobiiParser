@@ -5,33 +5,50 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:TobiiParser"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="1000">
+        Title="MainWindow" Height="600" Width="1000">
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="286*"/>
-            <RowDefinition Height="137*"/>
+            <RowDefinition Height="20"/>
+            <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
-        <TextBox x:Name="TextBox1" HorizontalAlignment="Left" Height="371" Margin="442,38,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="540" VerticalScrollBarVisibility="Visible" Grid.RowSpan="2"  >
+        <Menu VerticalAlignment="Top" Height="20"  >
+            <MenuItem Header="Основные операции">
+                <MenuItem Header="9.41" >
+                    <MenuItem Header="Разобрать txt файлы в единую таблицу с длительностями фиксаций" Click="MenuItem_Click_1"></MenuItem>
+                    <Separator></Separator>
+                    <MenuItem Header="Cортировать по папкам Летчики"  Click="Button_Click_9"></MenuItem>
+                    <MenuItem Header="Сорировать по папкам СП" Click="Button_Click_8"></MenuItem>
+                    <MenuItem Header="Слепить СП по парам " Click="Button_Click_2" ></MenuItem>
+                </MenuItem>
+            </MenuItem>
+        </Menu>
 
-        </TextBox>
-        <Button Content="Tobii csv -> ..." HorizontalAlignment="Left" Margin="10,38,0,0" VerticalAlignment="Top" Width="75" Click="Button_Click"/>
-        <Button Content="Tab2 read" HorizontalAlignment="Left" Margin="10,66,0,0" VerticalAlignment="Top" Width="75" Click="ButtonTab2ReadClick"/>
-        <Button Content="Вытащить txt в папку" HorizontalAlignment="Left" Margin="10,41.882,0,0" VerticalAlignment="Top" Width="127" Click="CopyTxtToDir" Grid.Row="1"/>
-        <TextBox x:Name="TextBoxCurDir" HorizontalAlignment="Left" Height="23" Margin="10,10,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="972"/>
-        <Button Content="Обработать" HorizontalAlignment="Left" Margin="10,139,0,0" VerticalAlignment="Top" Width="75" Click="Button_Click_3" />
-        <TextBox x:Name="TextBoxTarget" HorizontalAlignment="Left" Height="23" Margin="10,178,0,0" TextWrapping="Wrap" Text="C:\_\1\" VerticalAlignment="Top" Width="378"/>
-        <Button Content="..." HorizontalAlignment="Left" Height="23" Margin="393,178,0,0" VerticalAlignment="Top" Width="28" Click="Button_Click_4"/>
-        <TextBox x:Name="TextBoxTarget_Copy" HorizontalAlignment="Left" Height="23" Margin="10,72.882,0,0" TextWrapping="Wrap" Text="C:\_\2\" VerticalAlignment="Top" Width="378" Grid.Row="1"/>
-        <Button Content="..." HorizontalAlignment="Left" Height="23" Margin="393,72.882,0,0" VerticalAlignment="Top" Width="28" Click="Button_Click_5" Grid.Row="1"/>
-        <Button Content="Добавить суффикс txt+UID" HorizontalAlignment="Left" Margin="10,206,0,0" VerticalAlignment="Top" Width="155" Click="RenameAndAddSufficsAndUID"/>
-        <TextBox x:Name="TextBoxRename" HorizontalAlignment="Left" Height="23" Margin="170,206,0,0" TextWrapping="Wrap" Text="Колков" VerticalAlignment="Top" Width="218"/>
-        <Button Content="Перечень файлов вывести " HorizontalAlignment="Left" Margin="10,256,0,0" VerticalAlignment="Top" Width="155" Click="Button_Click_7"/>
-        <Button Content="Генерировать r-файлы" HorizontalAlignment="Left" Margin="10,100,0,0" VerticalAlignment="Top" Width="155" Click="R_filesGenerateButtonClick" />
-        <TextBox x:Name="TextBoxKadrDefault" HorizontalAlignment="Left"  Height="23" Margin="314,136,0,0" TextWrapping="Wrap" Text="ПИЛ" VerticalAlignment="Top" Width="107"/>
-        <Label Content="Кадр по умолчанию" HorizontalAlignment="Left" Margin="314,112,0,0" VerticalAlignment="Top"/>
+        <Grid Grid.Row="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="3*"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <TextBox x:Name="TextBox1" HorizontalAlignment="Left" Height="371" Margin="442,38,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="540" VerticalScrollBarVisibility="Visible" Grid.RowSpan="2"  >
+
+            </TextBox>
 
 
-        <Button Content="9.41 - слепить СП по парам " HorizontalAlignment="Left" Margin="10,256,0,0" VerticalAlignment="Top" Width="155" Click="Button_Click_2" />
+            <Button Content="Tobii csv -> ..." HorizontalAlignment="Left" Margin="10,38,0,0" VerticalAlignment="Top" Width="75" Click="Button_Click"/>
+            <Button Content="Tab2 read" HorizontalAlignment="Left" Margin="10,66,0,0" VerticalAlignment="Top" Width="75" Click="ButtonTab2ReadClick"/>
+            <Button Content="Вытащить txt в папку" HorizontalAlignment="Left" Margin="10,41.882,0,0" VerticalAlignment="Top" Width="127" Click="CopyTxtToDir" Grid.Row="1"/>
+            <TextBox x:Name="TextBoxCurDir" HorizontalAlignment="Left" Height="23" Margin="10,10,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="972"/>
+            <Button Content="Обработать" HorizontalAlignment="Left" Margin="10,139,0,0" VerticalAlignment="Top" Width="75" Click="Button_Click_3" />
+            <TextBox x:Name="TextBoxTarget" HorizontalAlignment="Left" Height="23" Margin="10,178,0,0" TextWrapping="Wrap" Text="C:\_\1\" VerticalAlignment="Top" Width="378"/>
+            <Button Content="..." HorizontalAlignment="Left" Height="23" Margin="393,178,0,0" VerticalAlignment="Top" Width="28" Click="Button_Click_4"/>
+            <TextBox x:Name="TextBoxTarget_Copy" HorizontalAlignment="Left" Height="23" Margin="10,72.882,0,0" TextWrapping="Wrap" Text="C:\_\2\" VerticalAlignment="Top" Width="378" Grid.Row="1"/>
+            <Button Content="..." HorizontalAlignment="Left" Height="23" Margin="393,72.882,0,0" VerticalAlignment="Top" Width="28" Click="Button_Click_5" Grid.Row="1"/>
+            <Button Content="Добавить суффикс txt+UID" HorizontalAlignment="Left" Margin="10,206,0,0" VerticalAlignment="Top" Width="155" Click="RenameAndAddSufficsAndUID"/>
+            <TextBox x:Name="TextBoxRename" HorizontalAlignment="Left" Height="23" Margin="170,206,0,0" TextWrapping="Wrap" Text="Колков" VerticalAlignment="Top" Width="218"/>
+            <Button Content="Перечень файлов вывести " HorizontalAlignment="Left" Margin="10,256,0,0" VerticalAlignment="Top" Width="155" Click="Button_Click_7"/>
+            <Button Content="Генерировать r-файлы" HorizontalAlignment="Left" Margin="10,100,0,0" VerticalAlignment="Top" Width="155" Click="R_filesGenerateButtonClick" />
+            <TextBox x:Name="TextBoxKadrDefault" HorizontalAlignment="Left"  Height="23" Margin="314,136,0,0" TextWrapping="Wrap" Text="ПИЛ" VerticalAlignment="Top" Width="107"/>
+            <Label Content="Кадр по умолчанию" HorizontalAlignment="Left" Margin="314,112,0,0" VerticalAlignment="Top"/>
 
+        </Grid>
     </Grid>
 </Window>
