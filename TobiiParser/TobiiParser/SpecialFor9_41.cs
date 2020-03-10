@@ -317,6 +317,7 @@ namespace TobiiParser
                     s += (r.tobiiRecords.IndexOf(tr) + 1).ToString() + "\t";
                     s += tr.CurFZone + "\t";
                     s += ZonesInterpretation[tr.CurFZone.ToString()] + "\t";
+                    s += ((double)tr.time_ms)/(24*3_600_000) + "\t";
                     s += (tr.time_ms- timeBegin) + "\t";
 
                     if (r.tobiiRecords.IndexOf(tr) + 1 >= r.tobiiRecords.Count())
