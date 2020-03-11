@@ -51,9 +51,14 @@ namespace TobiiCSVTester
             for (i = 0; i < 30; i++)
             {
                 axisXData[i] = i + 1;
-                axisYData[i] = rnd.Next(0, 100);
+                axisYData[i] = 0;
             }
             chart.Series["Series1"].Points.DataBindXY(axisXData, axisYData);
+        }
+
+        internal void RefreshChart(TobiiCSVFile tobiiCSVFile)
+        {
+            chart.Series["Series1"].Points.DataBindXY(tobiiCSVFile.Xs, tobiiCSVFile.Ys);
         }
     }
 }
