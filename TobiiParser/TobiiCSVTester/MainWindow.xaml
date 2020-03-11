@@ -5,8 +5,11 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:TobiiCSVTester"
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+        
+        xmlns:wf="clr-namespace:System.Windows.Forms;assembly=System.Windows.Forms"
+        xmlns:dvc="clr-namespace:System.Windows.Forms.DataVisualization.Charting;assembly=System.Windows.Forms.DataVisualization"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        Title="Тесты исходных данных от Tobii" Height="450" Width="800" Loaded="Window_Loaded" >
     <Window.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -14,6 +17,7 @@
                 <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.ComboBox.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Slider.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.TextBox.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.TextBlock.xaml"/>
             </ResourceDictionary.MergedDictionaries>
             <Style TargetType="{x:Type TextBox}" BasedOn="{StaticResource MaterialDesignTextBox}" >
                 <Setter Property="Margin" Value="0 8 0 8" />
@@ -55,21 +59,53 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="400"/>
-            <ColumnDefinition/>
+            <ColumnDefinition Width="2*"/>
+            <ColumnDefinition Width="3*"/>
         </Grid.ColumnDefinitions>
         <Menu Grid.ColumnSpan="2">
             <MenuItem Header="Файл">
-                <MenuItem Header="Закрыть" Command="CloseCommand"/>
+                <MenuItem Header="Закрыть" Command="{Binding AppCloseCommand}"  />
             </MenuItem>
             <MenuItem Header="Тесты">
-                <MenuItem Header="Диаграммы заполнения файлов" />
+                <MenuItem Header="Диаграммы заполнения файлов" Command="{Binding BuildFilesFillingDiagramsCommand}" />
             </MenuItem>
         </Menu>
-        <StackPanel Grid.Row="1" Orientation="Horizontal" >
-            <TextBox FontFamily="Roboto" Width="300" Text="" Margin="8"  materialDesign:HintAssist.Hint="Путь к папке с csv-файлами" Style="{StaticResource MaterialDesignFloatingHintTextBox}"/>
-            <Button Margin="8" Style="{StaticResource MaterialDesignRaisedLightButton}">...</Button>
-        </StackPanel>
+        <Grid Grid.Row="1" Grid.ColumnSpan="2">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            <TextBox FontFamily="Roboto" HorizontalAlignment="Stretch" Text="{Binding DirectoryCSVFiles}" Margin="8"  materialDesign:HintAssist.Hint="Путь к папке с csv-файлами" Style="{StaticResource MaterialDesignFloatingHintTextBox}"/>
+            <Button Grid.Column="1" Margin="8" Style="{StaticResource MaterialDesignRaisedLightButton}" Command="{Binding OpenDirectoryCSVFilesCommand}">...</Button>
+        </Grid>
+    
+        <Grid Grid.Row="2" >
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+
+            <ListBox HorizontalAlignment="Stretch" Margin="8" 
+                     ItemsSource="{Binding TobiiCSVFiles, UpdateSourceTrigger=PropertyChanged}" 
+                     SelectedItem="{Binding SelectedTobiiCSVFile, UpdateSourceTrigger=PropertyChanged}">
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <TextBlock Text="{Binding Name}"  Width="300" Margin="8"/>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+        </Grid>
+        <Grid Grid.Column="1" Grid.Row="2" >
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <TextBlock HorizontalAlignment="Center" Text="{Binding Path=SelectedTobiiCSVFile.Name, UpdateSourceTrigger=PropertyChanged}"
+                       Style="{StaticResource MaterialDesignSubtitle1TextBlock}"/>
+            <WindowsFormsHost Grid.Row="1">
+                <dvc:Chart x:Name="chart" />
+            </WindowsFormsHost>
+        </Grid>
 
     </Grid>
 </Window>
