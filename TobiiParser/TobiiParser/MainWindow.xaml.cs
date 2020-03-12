@@ -172,5 +172,10 @@ namespace TobiiParser
         {
             SpecialFor9_41_SCENARY2.CreateRFilesTest();
         }
+
+        private void MenuItem_Click_2(object sender, RoutedEventArgs e)
+        {
+            SpecialFor9_41_SCENARY2.CreateKFilesTest();
+        }
     }
 }

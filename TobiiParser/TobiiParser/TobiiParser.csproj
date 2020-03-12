@@ -101,6 +101,7 @@
     </ApplicationDefinition>
     <Compile Include="FilesOperations.cs" />
     <Compile Include="FZoneTab.cs" />
+    <Compile Include="KadrInterval.cs" />
     <Compile Include="KadrInTime.cs" />
     <Compile Include="MultipleDirsWorker.cs" />
     <Compile Include="ResultSeparator.cs" />

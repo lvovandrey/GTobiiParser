@@ -21,6 +21,7 @@
                     <MenuItem Header="Слепить СП по парам " Click="Button_Click_2" ></MenuItem>
                     <Separator></Separator>
                     <MenuItem Header="Создать RFile (режимы) из xlsx-файлов" Click="MenuItem_Click"  ></MenuItem>
+                    <MenuItem Header="Создать KFile (кадры) из xlsx-файлов" Click="MenuItem_Click_2"      ></MenuItem>
 
                 </MenuItem>
             </MenuItem>
