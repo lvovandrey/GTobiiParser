@@ -11,10 +11,13 @@ using TobiiCSVTester.View;
 using LiveCharts;
 using LiveCharts.Defaults;
 using LiveCharts.Wpf;
+using System.Windows.Threading;
+using System.Threading;
+using System.Windows.Media;
 
 namespace TobiiCSVTester.VM
 {
-    public class MainWindowViewModel:INPCBase
+    public class MainWindowViewModel : INPCBase
     {
 
         MainWindow MainWindow;
@@ -22,13 +25,16 @@ namespace TobiiCSVTester.VM
         public DelegateCommand BuildFilesFillingDiagramsCommand { get; set; }
         public DelegateCommand AppCloseCommand { get; set; }
         public DelegateCommand OpenDirectoryCSVFilesCommand { get; set; }
-        
+        public DelegateCommand TestsStopCommand { get; set; }
+
 
         public MainWindowViewModel(MainWindow mainWindow)
         {
-            BuildFilesFillingDiagramsCommand = new DelegateCommand(o => BuildFilesFillingDiagrams());
+            BuildFilesFillingDiagramsCommand = new DelegateCommand(o => BuildFilesFillingDiagramsAsync());
             AppCloseCommand = new DelegateCommand(o => AppClose());
             OpenDirectoryCSVFilesCommand = new DelegateCommand(o => OpenDirectoryCSVFiles());
+            TestsStopCommand = new DelegateCommand(o => TestsStop());
+
 
             TobiiCSVFiles = new ObservableCollection<TobiiCSVFile>();
             MainWindow = mainWindow;
@@ -37,8 +43,7 @@ namespace TobiiCSVTester.VM
         }
 
 
-
-        string directoryCSVFiles= @"g:\0. 941 TOBII Обработка2020\0. ИСХОДНИКИ\TOBII\1. сп\1. Виноградов\";
+        string directoryCSVFiles = @"";
         public string DirectoryCSVFiles
         {
             get
@@ -53,6 +58,20 @@ namespace TobiiCSVTester.VM
         }
 
 
+        int smoothInterval = 1000;
+        public int SmoothInterval
+        {
+            get
+            {
+                return smoothInterval;
+            }
+            set
+            {
+                smoothInterval = value;
+                OnPropertyChanged("SmoothInterval");
+            }
+        }
+
         string infoMessage = "";
         public string InfoMessage
         {
@@ -64,6 +83,12 @@ namespace TobiiCSVTester.VM
             {
                 infoMessage = value;
                 OnPropertyChanged("InfoMessage");
+
+                System.Windows.Application.Current.Dispatcher.Invoke(() => 
+                {
+                    MainWindow.MessageShowOnSnackBar(infoMessage);
+                });
+
             }
         }
 
@@ -78,7 +103,7 @@ namespace TobiiCSVTester.VM
             {
                 _SelectedTobiiCSVFile = value;
                 OnPropertyChanged("SelectedTobiiCSVFile");
-                MainWindow.RefreshChart(SelectedTobiiCSVFile);
+           //     MainWindow.RefreshChart(SelectedTobiiCSVFile);
 
                 StackedAreaExampleRefresh(SelectedTobiiCSVFile);
 
@@ -87,10 +112,25 @@ namespace TobiiCSVTester.VM
         }
 
 
-
-        private async void BuildFilesFillingDiagrams()
+        static CancellationTokenSource cur_cts;
+        private void TestsStop()
         {
-            TobiiCSVFiles.Clear();
+            cur_cts?.Cancel();
+            InfoMessage = "Тест прерван";
+        }
+
+
+        private async void BuildFilesFillingDiagramsAsync()
+        {
+            cur_cts?.Cancel();
+
+            cur_cts = new CancellationTokenSource();
+            await Task.Run(() => BuildFilesFillingDiagrams(cur_cts.Token));
+        }
+
+        private async Task BuildFilesFillingDiagrams(CancellationToken cancellationToken)
+        {
+            System.Windows.Application.Current.Dispatcher.Invoke(() => { TobiiCSVFiles.Clear(); });
 
             if (!Directory.Exists(DirectoryCSVFiles)) { MessageBox.Show("Директории " + DirectoryCSVFiles + " не существует"); return; }
 
@@ -98,15 +138,24 @@ namespace TobiiCSVTester.VM
 
             if (!Directory.Exists(DirectoryCSVFiles)) { MessageBox.Show("В директории и ее поддиректориях " + DirectoryCSVFiles + " нет csv-файлов"); return; }
 
+            InfoMessage = "Обработка " + files.Count() + " файлов началась";
+
             foreach (string fullfilepath in files)
             {
-                InfoMessage = "Файл " + files.IndexOf(fullfilepath) + "из" + files.Count() + " обработан";
+                if (cancellationToken.IsCancellationRequested)
+                {
+                    Console.WriteLine("Операция прервана"); InfoMessage = "Операция прервана"; break;
+                }
 
-                TobiiCSVFile tobiiCSVFile = new TobiiCSVFile(fullfilepath);
-                await Task.Run(() => tobiiCSVFile.ReadTestingInfoAsync());
-                TobiiCSVFiles.Add(tobiiCSVFile);
+
+                TobiiCSVFile tobiiCSVFile = new TobiiCSVFile(fullfilepath, SmoothInterval);
+                tobiiCSVFile.ReadTestingInfo();
+                System.Windows.Application.Current.Dispatcher.Invoke(() => { TobiiCSVFiles.Add(tobiiCSVFile); });
+                Console.WriteLine(fullfilepath);
+                InfoMessage = "Файл " + (files.IndexOf(fullfilepath) + 1).ToString() + " из " + files.Count() + " обработан";
+
             }
-            InfoMessage = "";
+            InfoMessage = "Обработка " + files.Count() + " файлов завершена";
         }
 
         private void AppClose()
@@ -128,7 +177,7 @@ namespace TobiiCSVTester.VM
         }
 
 
-
+        
 
 
 
@@ -137,6 +186,7 @@ namespace TobiiCSVTester.VM
 
             XFormatter = val => val.ToString();
             YFormatter = val => val.ToString();
+            XFormatter2 = val => TimeSpan.FromMilliseconds(val).ToString(@"mm\:ss");
 
             List<ObservablePoint> xy_list = new List<ObservablePoint>();
             foreach (var x in selectedTobiiCSVFile.Xs)
@@ -147,60 +197,91 @@ namespace TobiiCSVTester.VM
                 xy_list.Add(new ObservablePoint(xy.X, xy.Y));
             }
 
-            SeriesCollection = new SeriesCollection
+            //Brush brush = new SolidColorBrush(Colors.Gray);
+            //brush.Opacity = 0.5;
+
+            //SeriesCollection = new SeriesCollection
+            //{
+            //    new StackedAreaSeries
+            //    {
+            //        Values = new ChartValues<ObservablePoint>
+            //        {
+            //        },
+            //        LineSmoothness = 0 , Foreground = Brushes.Black, Fill = brush, PointForeground=Brushes.Black
+            //    }
+            //};
+
+            Brush brush2 = new SolidColorBrush(Colors.DarkOrange);
+            brush2.Opacity = 0.5;
+
+            SeriesCollection2 = new SeriesCollection
             {
                 new StackedAreaSeries
                 {
-                    Title = "Africa",
                     Values = new ChartValues<ObservablePoint>
                     {
-                    }
+                    },
+                    LineSmoothness = 0 , Foreground = Brushes.Black, Fill = brush2, PointForeground=Brushes.Black
                 }
             };
+
 
 
 
             foreach (var xy in xy_list)
             {
-                SeriesCollection[0].Values.Add(xy);
+         //       SeriesCollection[0].Values.Add(xy);
+                SeriesCollection2[0].Values.Add(xy);
             }
 
             OnPropertyChanged("SeriesCollection");
+            OnPropertyChanged("SeriesCollection2");
         }
 
         public void StackedAreaExampleRun()
         {
-  
-            SeriesCollection = new SeriesCollection
+
+            //Brush brush = new SolidColorBrush(Colors.Gray);
+            //brush.Opacity = 0.5;
+
+            //SeriesCollection = new SeriesCollection
+            //{
+            //    new StackedAreaSeries
+            //    {
+            //        Values = new ChartValues<ObservablePoint>
+            //        {
+            //        },
+            //        LineSmoothness = 0 , Foreground = Brushes.Black, Fill = brush, PointForeground=Brushes.Black
+            //    }
+            //};
+
+            Brush brush2 = new SolidColorBrush(Colors.DarkOrange);
+            brush2.Opacity = 0.5;
+
+            SeriesCollection2 = new SeriesCollection
             {
                 new StackedAreaSeries
                 {
-                    Title = "Africa",
-                    Values = new ChartValues<DateTimePoint>
+                    Values = new ChartValues<ObservablePoint>
                     {
-                        new DateTimePoint(new DateTime(1950, 1, 1), .228),
-                        new DateTimePoint(new DateTime(1960, 1, 1), .285),
-                        new DateTimePoint(new DateTime(1970, 1, 1), .366),
-                        new DateTimePoint(new DateTime(1980, 1, 1), .478),
-                        new DateTimePoint(new DateTime(1990, 1, 1), .629),
-                        new DateTimePoint(new DateTime(2000, 1, 1), .808),
-                        new DateTimePoint(new DateTime(2010, 1, 1), 1.031),
-                        new DateTimePoint(new DateTime(2013, 1, 1), 1.110)
                     },
-                    LineSmoothness = 0
+                    LineSmoothness = 0 , Foreground = Brushes.Black, Fill = brush2, PointForeground=Brushes.Black
                 }
-                
             };
 
-            XFormatter = val => new DateTime((long)val).ToString("yyyy");
-            YFormatter = val => val.ToString("N") + " M";
-                        OnPropertyChanged("SeriesCollection");
+            XFormatter = val => val.ToString();
+            YFormatter = val => val.ToString();
+            XFormatter2 = val => TimeSpan.FromMilliseconds(val).ToString(@"mm\:ss");
+
+            OnPropertyChanged("SeriesCollection");
         }
 
         public SeriesCollection SeriesCollection { get; set; }
+        public SeriesCollection SeriesCollection2 { get; set; }
+
         public Func<double, string> XFormatter { get; set; }
         public Func<double, string> YFormatter { get; set; }
-
+        public Func<double, string> XFormatter2 { get; set; }
     }
 
 

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MaterialDesignThemes.Wpf;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -26,39 +27,48 @@ namespace TobiiCSVTester
         {
             InitializeComponent();
             DataContext = new MainWindowViewModel(this);
+
+            var myMessageQueue = new SnackbarMessageQueue(TimeSpan.FromMilliseconds(400));
+            
+            MySnackbar.MessageQueue = myMessageQueue;
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            chart.ChartAreas.Add(new ChartArea("Default"));
+            //chart.ChartAreas.Add(new ChartArea("Default"));
 
-            // Добавим линию, и назначим ее в ранее созданную область "Default"
-            chart.Series.Add(new Series("Series1"));
-            chart.Series["Series1"].ChartArea = "Default";
-            chart.Series["Series1"].ChartType = SeriesChartType.Line;
+            //// Добавим линию, и назначим ее в ранее созданную область "Default"
+            //chart.Series.Add(new Series("Series1"));
+            //chart.Series["Series1"].ChartArea = "Default";
+            //chart.Series["Series1"].ChartType = SeriesChartType.Line;
 
-            RefreshChart();
+        //    RefreshChart();
         }
 
-        internal void RefreshChart()
+        internal void MessageShowOnSnackBar(string infoMessage)
         {
-            // добавим данные линии
-            int i = 0;
-            int[] axisXData = new int[30];
-            double[] axisYData = new double[30];
-            Random rnd = new Random();
-
-            for (i = 0; i < 30; i++)
-            {
-                axisXData[i] = i + 1;
-                axisYData[i] = 0;
-            }
-            chart.Series["Series1"].Points.DataBindXY(axisXData, axisYData);
+            MySnackbar.MessageQueue.Enqueue(infoMessage);
         }
 
-        internal void RefreshChart(TobiiCSVFile tobiiCSVFile)
-        {
-            chart.Series["Series1"].Points.DataBindXY(tobiiCSVFile.Xs, tobiiCSVFile.Ys);
-        }
+        //internal void RefreshChart()
+        //{
+        //    // добавим данные линии
+        //    int i = 0;
+        //    int[] axisXData = new int[30];
+        //    double[] axisYData = new double[30];
+        //    Random rnd = new Random();
+
+        //    for (i = 0; i < 30; i++)
+        //    {
+        //        axisXData[i] = i + 1;
+        //        axisYData[i] = 0;
+        //    }
+        //    chart.Series["Series1"].Points.DataBindXY(axisXData, axisYData);
+        //}
+
+        //internal void RefreshChart(TobiiCSVFile tobiiCSVFile)
+        //{
+        //    chart.Series["Series1"].Points.DataBindXY(tobiiCSVFile.Xs, tobiiCSVFile.Ys);
+        //}
     }
 }

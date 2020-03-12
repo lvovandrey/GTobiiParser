@@ -18,6 +18,8 @@
                 <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Slider.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.TextBox.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.TextBlock.xaml"/>
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Menu.xaml"/>
+
             </ResourceDictionary.MergedDictionaries>
             <Style TargetType="{x:Type TextBox}" BasedOn="{StaticResource MaterialDesignTextBox}" >
                 <Setter Property="Margin" Value="0 8 0 8" />
@@ -45,7 +47,7 @@
             <Style x:Key="MaterialDesignTextFieldBoxTextBox" TargetType="{x:Type TextBox}" BasedOn="{StaticResource MaterialDesignFloatingHintTextBox}">
                 <Setter Property="materialDesign:TextFieldAssist.DecorationVisibility" Value="Visible" />
             </Style>
-
+            
             <Style x:Key="MaterialDesignTextAreaTextBox" TargetType="{x:Type TextBox}" BasedOn="{StaticResource MaterialDesignFloatingHintTextBox}">
                 <Setter Property="materialDesign:TextFieldAssist.DecorationVisibility" Value="Visible" />
             </Style>
@@ -63,25 +65,33 @@
             <ColumnDefinition Width="2*"/>
             <ColumnDefinition Width="3*"/>
 
-            <ColumnDefinition Width="3*"/>
+
         </Grid.ColumnDefinitions>
-        <Menu Grid.ColumnSpan="2">
+        <Menu Grid.ColumnSpan="2" Foreground="DarkOrange" materialDesign:ShadowAssist.ShadowDepth="Depth3">
             <MenuItem Header="Файл">
                 <MenuItem Header="Закрыть" Command="{Binding AppCloseCommand}"  />
             </MenuItem>
             <MenuItem Header="Тесты">
                 <MenuItem Header="Диаграммы заполнения файлов" Command="{Binding BuildFilesFillingDiagramsCommand}" />
+                <MenuItem Header="Остановить тест" Command="{Binding TestsStopCommand}" />
             </MenuItem>
         </Menu>
         <Grid Grid.Row="1" Grid.ColumnSpan="2">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="Auto"/>
+                
+                <ColumnDefinition Width="176"/>
             </Grid.ColumnDefinitions>
             <TextBox FontFamily="Roboto" HorizontalAlignment="Stretch" 
                      Text="{Binding DirectoryCSVFiles, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" 
                      Margin="8"  materialDesign:HintAssist.Hint="Путь к папке с csv-файлами" Style="{StaticResource MaterialDesignFloatingHintTextBox}"/>
             <Button Grid.Column="1" Margin="8" Style="{StaticResource MaterialDesignRaisedLightButton}" Command="{Binding OpenDirectoryCSVFilesCommand}">...</Button>
+
+            <TextBox FontFamily="Roboto" HorizontalAlignment="Stretch" Grid.Column="2"
+                     Text="{Binding SmoothInterval, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" 
+                     Margin="40 8 8 8"  materialDesign:HintAssist.Hint="Интервал сглаживания" Style="{StaticResource MaterialDesignFloatingHintTextBox}"/>
+
         </Grid>
     
         <Grid Grid.Row="2" >
@@ -104,28 +114,41 @@
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="*"/>
+                <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
             <TextBox HorizontalAlignment="Center" Text="{Binding Path=SelectedTobiiCSVFile.Name, UpdateSourceTrigger=PropertyChanged}"
                        Style="{StaticResource MaterialDesignTextAreaTextBox}"
                        TextWrapping="Wrap"/>
-            <WindowsFormsHost Grid.Row="1">
+            <!--<WindowsFormsHost Grid.Row="1">
                 <dvc:Chart x:Name="chart" />
-            </WindowsFormsHost>
+            </WindowsFormsHost>-->
+            
+            <!--<lvc:CartesianChart  Grid.Row="1" Series="{Binding SeriesCollection, UpdateSourceTrigger=PropertyChanged}"   LegendLocation="None">
+                <lvc:CartesianChart.AxisX>
+                    <lvc:Axis Title="Время в csv-файле, мсек" LabelFormatter="{Binding XFormatter}"></lvc:Axis>
+                </lvc:CartesianChart.AxisX>
+                <lvc:CartesianChart.AxisY>
+                    <lvc:Axis Title="Среднее AOI-hits в интервале"  LabelFormatter="{Binding YFormatter}"></lvc:Axis>
+                </lvc:CartesianChart.AxisY>
+            </lvc:CartesianChart>-->
+            
+            <lvc:CartesianChart  Grid.Row="1" Grid.RowSpan="2" Series="{Binding SeriesCollection2, UpdateSourceTrigger=PropertyChanged}"   Zoom="X"   LegendLocation="None">
+                <lvc:CartesianChart.AxisX>
+                    <lvc:Axis Title="Время в csv-файле, мсек" LabelFormatter="{Binding XFormatter2}"></lvc:Axis>
+                </lvc:CartesianChart.AxisX>
+                <lvc:CartesianChart.AxisY>
+                    <lvc:Axis Title="Среднее AOI-hits в интервале"  LabelFormatter="{Binding YFormatter}"></lvc:Axis>
+                </lvc:CartesianChart.AxisY>
+            </lvc:CartesianChart>
+
         </Grid>
 
-        <lvc:CartesianChart Grid.Column="2" Grid.Row="2" Series="{Binding SeriesCollection, UpdateSourceTrigger=PropertyChanged}"  LegendLocation="Right">
-            <lvc:CartesianChart.AxisX>
-                <lvc:Axis Title="Year" LabelFormatter="{Binding XFormatter}"></lvc:Axis>
-            </lvc:CartesianChart.AxisX>
-            <lvc:CartesianChart.AxisY>
-                <lvc:Axis Title="Population" LabelFormatter="{Binding YFormatter}"></lvc:Axis>
-            </lvc:CartesianChart.AxisY>
-        </lvc:CartesianChart>
 
 
-        <materialDesign:Snackbar HorizontalAlignment="Stretch" IsActive="True"
-                                             x:Name="SnackbarFive" Grid.Row="3" Grid.ColumnSpan="3" >
-            <materialDesign:SnackbarMessage x:Name="SnackbarMessage1" Content="{Binding InfoMessage, UpdateSourceTrigger=PropertyChanged}"/>
+
+        <materialDesign:Snackbar HorizontalAlignment="Center"  MessageQueue="{materialDesign:MessageQueue}" 
+                                             x:Name="MySnackbar" Grid.Row="3" Grid.ColumnSpan="3" >
+            <materialDesign:SnackbarMessage x:Name="SnackbarMessage1" /> <!--Content="{Binding InfoMessage, UpdateSourceTrigger=PropertyChanged}"-->
         </materialDesign:Snackbar>
     </Grid>
 </Window>

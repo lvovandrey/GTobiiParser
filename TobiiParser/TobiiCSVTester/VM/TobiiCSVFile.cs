@@ -13,11 +13,16 @@ namespace TobiiCSVTester.VM
         public double Y;
     }
 
+   
+
     public class TobiiCSVFile
     {
-        public TobiiCSVFile(string name)
+        int SmoothInterval = 1000;
+
+        public TobiiCSVFile(string name, int smoothInterval)
         {
             Name = name;
+            SmoothInterval = smoothInterval;
             Xs = new List<long>();
             Ys = new List<double>();
         }
@@ -40,13 +45,15 @@ namespace TobiiCSVTester.VM
 
         public async void ReadTestingInfoAsync()
         {
+            Console.WriteLine(this.Name + " ReadTestingInfoAsync BEGIN");
             await Task.Run(() => ReadTestingInfo());
+            Console.WriteLine(this.Name + " ReadTestingInfoAsync END");
         }
 
         public void ReadTestingInfo()
         {
             TobiiCSVRead(Name, tobiiList);
-            Dictionary<long, double> avgs = CompactifyTobiiList(tobiiList, 100);
+            Dictionary<long, double> avgs = CompactifyTobiiList(tobiiList, SmoothInterval);
             foreach (var item in avgs)
             {
                 Ys.Add(item.Value);
