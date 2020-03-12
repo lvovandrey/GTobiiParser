@@ -167,5 +167,10 @@ namespace TobiiParser
         {
             SpecialFor9_41.ParseAllTxtToUnionTable(TextBoxTarget.Text);
         }
+
+        private void MenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            SpecialFor9_41_SCENARY2.CreateRFilesTest();
+        }
     }
 }

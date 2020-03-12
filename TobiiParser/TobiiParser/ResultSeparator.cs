@@ -46,7 +46,7 @@ namespace TobiiParser
             }
         }
 
-        internal static async void AppendWriteResult(string filename, List<Interval> intervals, string Header = "")
+        internal static async void AppendWriteResultAsync(string filename, List<Interval> intervals, string Header = "")
         {
             using (StreamWriter writer = new StreamWriter(File.Open(filename, FileMode.Append)))
             {
@@ -57,6 +57,19 @@ namespace TobiiParser
             GC.Collect();
             GC.WaitForPendingFinalizers();
         }
+
+        internal static void AppendWriteResult(string filename, List<Interval> intervals, string Header = "")
+        {
+            using (StreamWriter writer = new StreamWriter(File.Open(filename, FileMode.Append)))
+            {
+                writer.WriteLine();
+                if (Header != "") writer.WriteLine(Header);
+                Write(writer, intervals);
+            }
+            GC.Collect();
+            GC.WaitForPendingFinalizers();
+        }
+
     }
 
     public class ResultSeparator

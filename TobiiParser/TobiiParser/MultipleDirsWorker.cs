@@ -134,7 +134,7 @@ namespace TobiiParser
            
             Interval.WriteResult(file_csv.Replace(".csv", ".txt"), Intervals);
             string mainFileName = Path.Combine(MainDir, "RFile.txt");
-            Interval.AppendWriteResult(mainFileName, Intervals, file_csv);
+            Interval.AppendWriteResultAsync(mainFileName, Intervals, file_csv);
 
         }
     }
