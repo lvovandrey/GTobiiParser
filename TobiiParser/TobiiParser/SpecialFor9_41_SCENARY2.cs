@@ -2,26 +2,36 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
+using System.Xml.Serialization;
 using Excel = Microsoft.Office.Interop.Excel;
 
 namespace TobiiParser
 {
 
-    class SeparatorIntervals
+    [Serializable]
+    public class SeparatorIntervals
     {
         public List<Interval> Intervals = new List<Interval>();
         public string Id;
         public List<string> tags;
         public string filename;
+        public SeparatorIntervals()
+        {
+
+        }
     }
 
-
-    class KadrIntervals
+    [Serializable]
+    public class KadrIntervals
     {
         public List<KadrInterval> Intervals = new List<KadrInterval>();
         public string Id;
         public List<string> tags;
         public string filename;
+        public KadrIntervals()
+        {
+
+        }
     }
 
    
@@ -50,15 +60,75 @@ namespace TobiiParser
         /// </summary>
         internal static void CreateKFilesTest()
         {
-            List<SeparatorIntervals> SeparatorIntervalsList = SeparatorIntervalsReadFromExcel(@"c:\_\1\testK.xlsx");
-            foreach (var SeparatorIntervals in SeparatorIntervalsList)
+            List<KadrIntervals> KadrIntervalsList = KadrIntervalsReadFromExcel(@"c:\_\1\testK.xlsx");
+            foreach (var KadrIntervals in KadrIntervalsList)
             {
-                string Header = "FileID = " + SeparatorIntervals.Id + "\t";
-                foreach (var tag in SeparatorIntervals.tags)
+                string Header = "FileID = " + KadrIntervals.Id + "\t";
+                foreach (var tag in KadrIntervals.tags)
                     Header += tag + "\t";
-                Interval.AppendWriteResult(@"c:\_\1\RFile.txt", SeparatorIntervals.Intervals, Header);
+                KadrInterval.AppendWriteResult(@"c:\_\1\KFile.txt", KadrIntervals.Intervals, Header);
             }
 
+        }
+
+
+        /// <summary>
+        /// Создание через сериализацию RFile.xml
+        /// </summary>
+        internal static void SerializeRFiles(string sourceFilename, string targetRFileName)
+        {
+            List<SeparatorIntervals> SeparatorIntervalsList = SeparatorIntervalsReadFromExcel(@sourceFilename);
+            XmlSerializer formatter = new XmlSerializer(typeof(List<SeparatorIntervals>));
+
+            using (FileStream fs = new FileStream(@targetRFileName, FileMode.OpenOrCreate))
+            {
+                formatter.Serialize(fs, SeparatorIntervalsList);
+            }
+        }
+
+        /// <summary>
+        /// Создание через сериализацию KFile.xml (раньше не делал) из excel. 
+        /// </summary>
+        internal static void SerializeKFiles(string sourceFilename, string targetKFileName)
+        {
+            List<KadrIntervals> KadrIntervalsList = KadrIntervalsReadFromExcel(@sourceFilename);
+            XmlSerializer formatter = new XmlSerializer(typeof(List<KadrIntervals>));
+
+            using (FileStream fs = new FileStream(@targetKFileName, FileMode.OpenOrCreate))
+            {
+                formatter.Serialize(fs, KadrIntervalsList);
+            }
+        }
+
+
+        /// <summary>
+        /// Десериализация RFile.xml
+        /// </summary>
+        internal static List<SeparatorIntervals> DeserializeRFiles(string sourceFilename)
+        {
+            XmlSerializer formatter = new XmlSerializer(typeof(List<SeparatorIntervals>));
+            List<SeparatorIntervals> SeparatorIntervalsList; 
+
+            using (FileStream fs = new FileStream(@sourceFilename, FileMode.OpenOrCreate))
+            {
+                SeparatorIntervalsList = (List<SeparatorIntervals>)formatter.Deserialize(fs);
+            }
+            return SeparatorIntervalsList;
+        }
+
+        /// <summary>
+        /// Десериализация KFile.xml 
+        /// </summary>
+        internal static List<KadrIntervals> DeserializeKFiles(string sourceFilename)
+        {
+            XmlSerializer formatter = new XmlSerializer(typeof(List<KadrIntervals>));
+            List<KadrIntervals> SeparatorIntervalsList;
+
+            using (FileStream fs = new FileStream(@sourceFilename, FileMode.OpenOrCreate))
+            {
+                SeparatorIntervalsList = (List<KadrIntervals>)formatter.Deserialize(fs);
+            }
+            return SeparatorIntervalsList;
         }
 
 
@@ -152,13 +222,11 @@ namespace TobiiParser
                     long tbeg = (long)t;
                     double te = (double)arrData[i + 1, 1] * 3_600_000 * 24;
                     long tend = (long)te;
-                    List<string> kadrs = new List<string>();
+                    string[] kadrs = new string[arrData.GetUpperBound(1)-1];
                     int j;
                     for (j=2; j<=arrData.GetUpperBound(1); j++)
-                    {
-                        kadrs.Add((string)arrData[i, j]);
-                    }
-
+                        kadrs[j-2] = (string)arrData[i, j];
+                    
                     KadrInterval I = new KadrInterval(kadrs,
                                     tbeg,
                                     tend);
