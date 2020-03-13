@@ -125,7 +125,7 @@ namespace TobiiParser
 
         private void ButtonTab2ReadClick(object sender, RoutedEventArgs e)
         {
-            ExcelReader.ReadTabOfKeys(@"C:\_\Tab2new2.xlsx");
+            TabOfKeys tabOfKeys = ExcelReader.ReadTabOfKeys(@"C:\_\Tab2new2.xlsx", "T");
         }
 
         private void R_filesGenerateButtonClick(object sender, RoutedEventArgs e)

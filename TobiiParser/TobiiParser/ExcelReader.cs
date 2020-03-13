@@ -65,7 +65,7 @@ namespace TobiiParser
 
 
 
-        public static TabOfKeys ReadTabOfKeys(string FileName)
+        public static TabOfKeys ReadTabOfKeys(string FileName, string LastColumnExcelName)
         {
             //считываем данные из Excel файла в двумерный массив
             Excel.Application xlApp = new Excel.Application(); //Excel
@@ -77,7 +77,7 @@ namespace TobiiParser
 
 
             int iLastRow = xlSht.Cells[xlSht.Rows.Count, "A"].End[Excel.XlDirection.xlUp].Row;  //последняя заполненная строка в столбце А      
-            var arrData = (object[,])xlSht.Range["A1:B" + iLastRow].Value; //берём данные с листа Excel
+            var arrData = (object[,])xlSht.Range["A1:" + LastColumnExcelName + iLastRow.ToString()].Value; //берём данные с листа Excel
             //xlApp.Visible = true; //отображаем Excel     
             xlWB.Close(false); //закрываем книгу, изменения не сохраняем
             xlApp.Quit(); //закрываем Excel

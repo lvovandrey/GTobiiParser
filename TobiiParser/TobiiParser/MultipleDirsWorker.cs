@@ -16,7 +16,7 @@ namespace TobiiParser
             List<TobiiRecord> tobiiRecords = new List<TobiiRecord>();
             tobiiCsvReader.TobiiCSCRead(file_csv, tobiiRecords);
             List<TobiiRecord> FiltredTobiiList = tobiiCsvReader.CompactTobiiRecords(tobiiRecords);
-            TabOfKeys tabOfKeys = ExcelReader.ReadTabOfKeys(tab2File);
+            TabOfKeys tabOfKeys = ExcelReader.ReadTabOfKeys(tab2File, "T");
             List<KadrInTime> kadrInTimes = ExcelReader.ReadKadrSets(file_k);
             FZoneTab fZoneTab = new FZoneTab();
             List<TobiiRecord> FZoneList = fZoneTab.Calculate(FiltredTobiiList, kadrInTimes, tabOfKeys);
@@ -64,12 +64,18 @@ namespace TobiiParser
                 if (filescsv.Count() > 1) { Big_textBox.Text += "В директории " + dir + "       содержится более 1 файла csv" + Environment.NewLine; continue; }
                 else if (filescsv.Count() < 1) { Big_textBox.Text += "В директории " + dir + "          нет файла csv" + Environment.NewLine; continue; }
                 file_csv = filescsv[0];
-                file_k = file_csv.Replace("1.csv", "k.xls");
-                file_reg = Path.Combine(mainDir, "RFile_2.txt"); ;
+
+                file_k = Path.Combine(mainDir, "KFile.xml");
+                file_reg = Path.Combine(mainDir, "RFile.xml"); 
 
                 if (!File.Exists(file_reg))
                 {
                     Big_textBox.Text += "Не могу найти файл с разбивкой режимов" + Environment.NewLine;
+                    break;
+                }
+                if (!File.Exists(file_k))
+                {
+                    Big_textBox.Text += "Не могу найти файл с разбивкой кадров" + Environment.NewLine;
                     break;
                 }
 
@@ -86,7 +92,7 @@ namespace TobiiParser
             List<TobiiRecord> tobiiRecords = new List<TobiiRecord>();
             tobiiCsvReader.TobiiCSCRead(file_csv, tobiiRecords);
             List<TobiiRecord> FiltredTobiiList = tobiiCsvReader.CompactTobiiRecords(tobiiRecords);
-            TabOfKeys tabOfKeys = ExcelReader.ReadTabOfKeys(tab2File);
+            TabOfKeys tabOfKeys = ExcelReader.ReadTabOfKeys(tab2File, "T");
 
 
             List<KadrInTime> kadrInTimes;
