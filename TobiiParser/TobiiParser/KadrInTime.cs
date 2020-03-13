@@ -102,6 +102,7 @@ namespace TobiiParser
             throw new Exception("Зона тобии номер " + tobiiZone.ToString() + " находится вне диапазона адресов - от -1 до 37");
 
         }
+
         public static string GetKadr(List<KadrInTime> kadrInTimes,long time_ms, int tobiiZone)
         {
             KadrInTime kit = FindTimeInList(kadrInTimes, time_ms);

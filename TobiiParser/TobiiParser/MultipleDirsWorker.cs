@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Controls;
 
 namespace TobiiParser
@@ -94,15 +96,22 @@ namespace TobiiParser
             List<TobiiRecord> FiltredTobiiList = tobiiCsvReader.CompactTobiiRecords(tobiiRecords);
             TabOfKeys tabOfKeys = ExcelReader.ReadTabOfKeys(tab2File, "T");
 
+            Regex regex = new Regex(@"id\d{3}");
+            MatchCollection matches = regex.Matches(Path.GetFileName(file_csv));
+            if (matches.Count > 1 || matches.Count==0) { MessageBox.Show("В имени файла " + file_csv + " найдено неверное кол-во id (0 или более 1)"); return;  }
+            string FileId = matches[0].Value.Replace("id", "");
 
-            List<KadrInTime> kadrInTimes;
-            if (kadrDefault == "")
-                kadrInTimes = ExcelReader.ReadKadrSets(file_k);
-            else
-                kadrInTimes = ExcelReader.GenerateKadrSets(kadrDefault);
+            KadrIntervals kadrIntervals;
+            kadrIntervals = SpecialFor9_41_SCENARY2.GetKadrIntervalsInXmlKFile(file_k, FileId);
+
+            //List<KadrInTime> kadrInTimes;
+            //if (kadrDefault == "")
+            //    kadrInTimes = ExcelReader.ReadKadrSets(file_k);
+            //else
+            //    kadrInTimes = ExcelReader.GenerateKadrSets(kadrDefault);
            
             FZoneTab fZoneTab = new FZoneTab();
-            List<TobiiRecord> FZoneList = fZoneTab.Calculate(FiltredTobiiList, kadrInTimes, tabOfKeys);
+            List<TobiiRecord> FZoneList = fZoneTab.Calculate(FiltredTobiiList, kadrIntervals, tabOfKeys);
             FZoneList = tobiiCsvReader.ClearFromGarbageZone(FZoneList, -1, 100);
             FZoneList = tobiiCsvReader.CompactTobiiRecords(FZoneList, "FZones");
 

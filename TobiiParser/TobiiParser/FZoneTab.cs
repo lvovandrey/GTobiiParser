@@ -13,17 +13,17 @@ namespace TobiiParser
 
         public List<TobiiRecord> Calculate(List<TobiiRecord> tobiiRecords, List<KadrInTime> kadrInTimes, TabOfKeys tabOfKeys)
         {
-           // FZoneList = new List<TobiiRecord>();
+            // FZoneList = new List<TobiiRecord>();
             foreach (var TR in tobiiRecords)
             {
                 foreach (var zone in TR.zones)
                     TR.fzones.Add(tabOfKeys.GetFuncZone(zone, "ПИЛ"));
-                
+
                 TR.fzones = TR.fzones.Distinct().ToList();
-                
+
                 if (TR.fzones.Count() > 1)
-                   if (TR.fzones.Contains(13)) TR.fzones.Remove(13);
-                if(TR.fzones.Count()>0)
+                    if (TR.fzones.Contains(13)) TR.fzones.Remove(13);
+                if (TR.fzones.Count() > 0)
                     TR.CurFZone = TR.fzones.First();
                 if (TR.fzones.Count() == 0)
                     TR.CurFZone = -1;
@@ -31,8 +31,43 @@ namespace TobiiParser
                 // if (kadr == "") continue;
                 //string kadr = KadrInTime.GetKadr(kadrInTimes, TR.time_ms);
 
-                    //int FZone = tabOfKeys.GetFuncZone(TR.zone, kadr);
-                    //FZoneList.Add(new TobiiRecord() { time_ms = TR.time_ms, zone = FZone });
+                //int FZone = tabOfKeys.GetFuncZone(TR.zone, kadr);
+                //FZoneList.Add(new TobiiRecord() { time_ms = TR.time_ms, zone = FZone });
+            }
+            return tobiiRecords;
+        }
+
+
+        /// <summary>
+        /// По моему это бесполезно комментировать.... 
+        /// Короче тут происходит самое основное - вроде как смотрится каждая строка, потом выясняется в каком она кадре
+        /// Потом .... вобщем ей назначается одна только зона в результате....
+        /// </summary>
+        /// <param name="tobiiRecords"></param>
+        /// <param name="kadrIntervals"></param>
+        /// <param name="tabOfKeys"></param>
+        /// <returns></returns>
+        public List<TobiiRecord> Calculate(List<TobiiRecord> tobiiRecords, KadrIntervals kadrIntervals, TabOfKeys tabOfKeys)
+        {
+            // FZoneList = new List<TobiiRecord>();
+            foreach (var TR in tobiiRecords)//проходим по всем записям
+            {
+                string kadr = "";
+                kadr = kadrIntervals.GetKadr(TR.time_ms);
+                if (kadr == "") throw new Exception("Не могу найти подходящий кадр для интервала id = " + kadrIntervals.Id + " при времени" + TR.time_ms);
+
+
+                foreach (var zone in TR.zones)
+                    TR.fzones.Add(tabOfKeys.GetFuncZone(zone, kadr));
+
+                TR.fzones = TR.fzones.Distinct().ToList();
+
+                if (TR.fzones.Count() > 1)
+                    if (TR.fzones.Contains(0)) TR.fzones.Remove(0);
+                if (TR.fzones.Count() > 0)
+                    TR.CurFZone = TR.fzones.First();
+                if (TR.fzones.Count() == 0)
+                    TR.CurFZone = -1;
             }
             return tobiiRecords;
         }
@@ -62,7 +97,7 @@ namespace TobiiParser
                 time -= sec * 1_000;
                 int msec = (int)Math.Floor(time);
 
-                string s = hour.ToString()+"\t"+min.ToString()+"\t"+sec.ToString()+ "\t" +msec.ToString() +"\t" + tr.CurFZone.ToString();
+                string s = hour.ToString() + "\t" + min.ToString() + "\t" + sec.ToString() + "\t" + msec.ToString() + "\t" + tr.CurFZone.ToString();
                 writer.WriteLine(s);
             }
         }

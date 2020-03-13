@@ -28,6 +28,9 @@ namespace TobiiParser
             time_ms_end = TimeEnd;
         }
 
+
+
+
         //время в этом промежутке?
         public bool IsTimeHere(long time_ms)
         {

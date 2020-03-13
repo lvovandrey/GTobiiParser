@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using System.Xml.Serialization;
+using System.Linq;
 using Excel = Microsoft.Office.Interop.Excel;
 
 namespace TobiiParser
@@ -32,9 +33,15 @@ namespace TobiiParser
         {
 
         }
+
+        internal string GetKadr(long time_ms)
+        {
+            var k = Intervals.Where(I => ((I.time_ms_beg <= time_ms) && (I.time_ms_end > time_ms))).FirstOrDefault();
+            return k.KadrOnMFI;
+        }
     }
 
-   
+
 
 
     internal class SpecialFor9_41_SCENARY2
@@ -107,7 +114,7 @@ namespace TobiiParser
         internal static List<SeparatorIntervals> DeserializeRFiles(string sourceFilename)
         {
             XmlSerializer formatter = new XmlSerializer(typeof(List<SeparatorIntervals>));
-            List<SeparatorIntervals> SeparatorIntervalsList; 
+            List<SeparatorIntervals> SeparatorIntervalsList;
 
             using (FileStream fs = new FileStream(@sourceFilename, FileMode.OpenOrCreate))
             {
@@ -129,6 +136,14 @@ namespace TobiiParser
                 SeparatorIntervalsList = (List<KadrIntervals>)formatter.Deserialize(fs);
             }
             return SeparatorIntervalsList;
+        }
+
+        internal static KadrIntervals GetKadrIntervalsInXmlKFile(string file_k, string fileId)
+        {
+            List<KadrIntervals> Lst = DeserializeKFiles(file_k);
+            var kadrIntervals = Lst.Where(i => i.Id == fileId).FirstOrDefault();
+            if (kadrIntervals == null) throw new Exception("Не могу найти нужный ID " + fileId + " в файле" + file_k);
+            return kadrIntervals;
         }
 
 
@@ -191,6 +206,8 @@ namespace TobiiParser
             return SeparatorIntervalsList;
         }
 
+
+
         /// <summary>
         /// Считывание разбивки на режимы (используется для формирования R-file) из xlsx файла формата 9.41-сц2
         /// </summary>
@@ -205,7 +222,7 @@ namespace TobiiParser
             xlWB = xlApp.Workbooks.Open(filename); //название файла Excel    
             int NShts = xlWB.Worksheets.Count;
             List<KadrIntervals> KadrIntervalsList = new List<KadrIntervals>();
-         
+
             foreach (Excel.Worksheet sheet in xlWB.Worksheets)
             {
                 int iLastRow = sheet.Cells[sheet.Rows.Count, "A"].End[Excel.XlDirection.xlUp].Row;
@@ -222,11 +239,11 @@ namespace TobiiParser
                     long tbeg = (long)t;
                     double te = (double)arrData[i + 1, 1] * 3_600_000 * 24;
                     long tend = (long)te;
-                    string[] kadrs = new string[arrData.GetUpperBound(1)-1];
+                    string[] kadrs = new string[arrData.GetUpperBound(1) - 1];
                     int j;
-                    for (j=2; j<=arrData.GetUpperBound(1); j++)
-                        kadrs[j-2] = (string)arrData[i, j];
-                    
+                    for (j = 2; j <= arrData.GetUpperBound(1); j++)
+                        kadrs[j - 2] = (string)arrData[i, j];
+
                     KadrInterval I = new KadrInterval(kadrs,
                                     tbeg,
                                     tend);
