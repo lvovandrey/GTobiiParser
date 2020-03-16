@@ -34,11 +34,17 @@ namespace TobiiParser
 
         }
 
-        internal string GetKadr(long time_ms)
+        internal string GetKadr(long time_ms, int MFINumber)
         {
-            var k = Intervals.Where(I => ((I.time_ms_beg <= time_ms) && (I.time_ms_end > time_ms))).FirstOrDefault();
-            return k.KadrOnMFI;
+            KadrInterval k = new KadrInterval();
+            k = Intervals.Where(I => ((I.time_ms_beg <= time_ms) && (I.time_ms_end > time_ms))).FirstOrDefault();
+            if (k == null) throw new Exception("Время " + time_ms + " отсутствует в таблице разбивки кадров по времени - KFile.xml");
+            return k.GetKadrOnMFI(MFINumber);
+
+
         }
+
+
     }
 
 
@@ -46,6 +52,27 @@ namespace TobiiParser
 
     internal class SpecialFor9_41_SCENARY2
     {
+        /// <summary>
+        /// Возвращает номер МФИ по номеру зоны в tobii-csv-файле. 
+        /// </summary>
+        /// <param name="AOIHit"></param>
+        /// <returns></returns>
+        public static int GetMFINumber(int AOIHit)
+        {
+            if (AOIHit >= 1 && AOIHit <= 15)
+                return 0;
+            if (AOIHit >= 16 && AOIHit <= 30)
+                return 1;
+            if (AOIHit >= 31 && AOIHit <= 45)
+                return 2;
+            if (AOIHit >= 46)
+                return 0;
+
+            return 0;
+        }
+
+
+
         /// <summary>
         /// Создание RFile по другому немного
         /// </summary>
@@ -144,6 +171,14 @@ namespace TobiiParser
             var kadrIntervals = Lst.Where(i => i.Id == fileId).FirstOrDefault();
             if (kadrIntervals == null) throw new Exception("Не могу найти нужный ID " + fileId + " в файле" + file_k);
             return kadrIntervals;
+        }
+
+        internal static SeparatorIntervals GetSeparatorIntervalsInXmlKFile(string file_r, string fileId)
+        {
+            List<SeparatorIntervals> Lst = DeserializeRFiles(file_r);
+            var separatorIntervals = Lst.Where(i => i.Id == fileId).FirstOrDefault();
+            if (separatorIntervals == null) throw new Exception("Не могу найти нужный ID " + fileId + " в файле" + file_r);
+            return separatorIntervals;
         }
 
 

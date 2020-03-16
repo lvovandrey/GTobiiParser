@@ -61,16 +61,16 @@ namespace TobiiParser
             string[] dirs = Directory.GetDirectories(mainDir, "*", SearchOption.AllDirectories);
             foreach (var dir in dirs)
             {
-                string file_csv, file_k, file_reg;
+                string file_csv, file_k, file_r;
                 string[] filescsv = Directory.GetFiles(dir, "*.csv", SearchOption.TopDirectoryOnly);
                 if (filescsv.Count() > 1) { Big_textBox.Text += "В директории " + dir + "       содержится более 1 файла csv" + Environment.NewLine; continue; }
                 else if (filescsv.Count() < 1) { Big_textBox.Text += "В директории " + dir + "          нет файла csv" + Environment.NewLine; continue; }
                 file_csv = filescsv[0];
 
                 file_k = Path.Combine(mainDir, "KFile.xml");
-                file_reg = Path.Combine(mainDir, "RFile.xml"); 
+                file_r = Path.Combine(mainDir, "RFile.xml"); 
 
-                if (!File.Exists(file_reg))
+                if (!File.Exists(file_r))
                 {
                     Big_textBox.Text += "Не могу найти файл с разбивкой режимов" + Environment.NewLine;
                     break;
@@ -82,13 +82,13 @@ namespace TobiiParser
                 }
 
                 textBox.Text = "Обрабатываю " + dir;
-                await Task.Run(() => ParseInDirectory_OneRegFile(dir, file_csv, file_k, file_reg, tab2File, KadrDefault));
+                await Task.Run(() => ParseInDirectory_OneRegFile(dir, file_csv, file_k, file_r, tab2File, KadrDefault));
             }
 
             textBox.Text = "Обработка завершена";
         }
 
-        private static void ParseInDirectory_OneRegFile(string dir, string file_csv, string file_k, string file_reg, string tab2File, string kadrDefault="")
+        private static void ParseInDirectory_OneRegFile(string dir, string file_csv, string file_k, string file_r, string tab2File, string kadrDefault="")
         {
             TobiiCsvReader tobiiCsvReader = new TobiiCsvReader();
             List<TobiiRecord> tobiiRecords = new List<TobiiRecord>();
@@ -104,11 +104,6 @@ namespace TobiiParser
             KadrIntervals kadrIntervals;
             kadrIntervals = SpecialFor9_41_SCENARY2.GetKadrIntervalsInXmlKFile(file_k, FileId);
 
-            //List<KadrInTime> kadrInTimes;
-            //if (kadrDefault == "")
-            //    kadrInTimes = ExcelReader.ReadKadrSets(file_k);
-            //else
-            //    kadrInTimes = ExcelReader.GenerateKadrSets(kadrDefault);
            
             FZoneTab fZoneTab = new FZoneTab();
             List<TobiiRecord> FZoneList = fZoneTab.Calculate(FiltredTobiiList, kadrIntervals, tabOfKeys);
@@ -117,8 +112,9 @@ namespace TobiiParser
 
             fZoneTab.WriteResult(file_csv.Replace(".csv", ".txt"), FZoneList);
 
-            List<Interval> intervals = ExcelReader.SeparatorIntervalsReadFromUnionTxt(file_reg, file_csv);
-            ResultSeparator resultSeparator = new ResultSeparator(dir + @"\reg\", intervals, FZoneList, Path.GetFileName(file_csv).Replace(".csv", "_"));
+            SeparatorIntervals separatorIntervals = SpecialFor9_41_SCENARY2.GetSeparatorIntervalsInXmlKFile(file_r, FileId);
+
+            ResultSeparator resultSeparator = new ResultSeparator(dir + @"\reg\", separatorIntervals.Intervals, FZoneList, Path.GetFileName(file_csv).Replace(".csv", "_"));
             resultSeparator.Separate();
         }
 

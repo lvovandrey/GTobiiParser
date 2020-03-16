@@ -52,22 +52,33 @@ namespace TobiiParser
             // FZoneList = new List<TobiiRecord>();
             foreach (var TR in tobiiRecords)//проходим по всем записям
             {
-                string kadr = "";
-                kadr = kadrIntervals.GetKadr(TR.time_ms);
-                if (kadr == "") throw new Exception("Не могу найти подходящий кадр для интервала id = " + kadrIntervals.Id + " при времени" + TR.time_ms);
-
 
                 foreach (var zone in TR.zones)
-                    TR.fzones.Add(tabOfKeys.GetFuncZone(zone, kadr));
+                {
+                    int MFINumber;
+                    string kadr;
+                    int Fzone;
+                    MFINumber = SpecialFor9_41_SCENARY2.GetMFINumber(zone);
+                    kadr = kadrIntervals.GetKadr(TR.time_ms, MFINumber);
+                    if (kadr == "")
+                        throw new Exception("Не могу найти подходящий кадр для интервала id = " + kadrIntervals.Id + " при времени" + TR.time_ms);
+                    Fzone = tabOfKeys.GetFuncZone(zone, kadr);
+                    TR.fzones.Add(Fzone);
+
+                }
 
                 TR.fzones = TR.fzones.Distinct().ToList();
 
                 if (TR.fzones.Count() > 1)
-                    if (TR.fzones.Contains(0)) TR.fzones.Remove(0);
+                    if (TR.fzones.Contains(0))
+                        TR.fzones.Remove(0);
                 if (TR.fzones.Count() > 0)
                     TR.CurFZone = TR.fzones.First();
                 if (TR.fzones.Count() == 0)
                     TR.CurFZone = -1;
+
+
+
             }
             return tobiiRecords;
         }

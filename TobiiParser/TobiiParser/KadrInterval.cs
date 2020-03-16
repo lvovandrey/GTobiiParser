@@ -49,6 +49,13 @@ namespace TobiiParser
             return null;
         }
 
+        internal string GetKadrOnMFI(int mFINumber)
+        {
+            if (mFINumber > KadrOnMFI.GetUpperBound(0))
+                throw new Exception("МФИ номер (номера от нуля) " + mFINumber +"в таблице разбивки кадров по времени нет. Там только " + 
+                                            (KadrOnMFI.GetUpperBound(0) + 1).ToString() + " штук МФИ");
+            return KadrOnMFI[mFINumber];
+        }
 
         public static async void WriteResult(string filename, List<KadrInterval> intervals)
         {
