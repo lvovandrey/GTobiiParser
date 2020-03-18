@@ -84,12 +84,12 @@ namespace TobiiParser
                 string filename = DirectoryForFiles + prefixfilename + "_№" + number.ToString() + " " + interval.Name + ".txt";
                 WriteResult(filename, interval.records);
 
-                //А теперь в свою собственную
-                string Dir_innerName = DirectoryForFiles + @"\" + prefixfilename + "_№" + number.ToString() + " " + interval.Name + @"\";
-                string filename2 = Dir_innerName + "Inner " + prefixfilename + "_№" + number.ToString() + " " + interval.Name + ".txt";
-                DirectoryInfo di_inner = new DirectoryInfo(Dir_innerName);
-                if (!di_inner.Exists) di_inner.Create();
-                WriteResult(filename2, interval.records);
+                ////А теперь в свою собственную   - А вот не надо в собственную
+                //string Dir_innerName = DirectoryForFiles + @"\" + prefixfilename + "_№" + number.ToString() + " " + interval.Name + @"\";
+                //string filename2 = Dir_innerName + "Inner " + prefixfilename + "_№" + number.ToString() + " " + interval.Name + ".txt";
+                //DirectoryInfo di_inner = new DirectoryInfo(Dir_innerName);
+                //if (!di_inner.Exists) di_inner.Create();
+                //WriteResult(filename2, interval.records);
 
             }
         }

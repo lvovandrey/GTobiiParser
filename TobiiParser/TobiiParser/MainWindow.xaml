@@ -52,6 +52,8 @@
             <Button Content="Генерировать r-файлы" HorizontalAlignment="Left" Margin="10,100,0,0" VerticalAlignment="Top" Width="155" Click="R_filesGenerateButtonClick" />
             <TextBox x:Name="TextBoxKadrDefault" HorizontalAlignment="Left"  Height="23" Margin="314,136,0,0" TextWrapping="Wrap" Text="ПИЛ" VerticalAlignment="Top" Width="107"/>
             <Label Content="Кадр по умолчанию" HorizontalAlignment="Left" Margin="314,112,0,0" VerticalAlignment="Top"/>
+            <TextBox x:Name="TextBoxFixationAddition" HorizontalAlignment="Left"  Height="23" Margin="198,136,0,0" TextWrapping="Wrap" Text="500" VerticalAlignment="Top" Width="72"/>
+            <TextBlock Text="Прибавка к фиксации, мсек" TextWrapping="Wrap" HorizontalAlignment="Left" Margin="198,112,0,0" VerticalAlignment="Top" Height="24" Width="87" FontSize="10"/>
 
         </Grid>
     </Grid>

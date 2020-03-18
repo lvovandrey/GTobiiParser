@@ -80,8 +80,12 @@ namespace TobiiParser
 
         private void Button_Click_3(object sender, RoutedEventArgs e)
         {
-           // MultipleDirsWorker.PassAllDIrs(@TextBoxTarget.Text, this.TextBoxCurDir,this.TextBox1, @"C:\_\Tab2new2.xlsx");
-
+            // MultipleDirsWorker.PassAllDIrs(@TextBoxTarget.Text, this.TextBoxCurDir,this.TextBox1, @"C:\_\Tab2new2.xlsx");
+            MultipleDirsWorker.FixationAddition = 500;
+            if (!int.TryParse(TextBoxFixationAddition.Text, out MultipleDirsWorker.FixationAddition))
+            {
+                System.Windows.MessageBox.Show("Введите корректное значение добавки к фиксациям, в милисекундах"); return;
+            }
             MultipleDirsWorker.PassAllDIrs_OneRegFile(@TextBoxTarget.Text, this.TextBoxCurDir, this.TextBox1, @"C:\_\Tab2new2.xlsx", TextBoxKadrDefault.Text);
         }
 

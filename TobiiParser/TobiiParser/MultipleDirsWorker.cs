@@ -11,6 +11,7 @@ namespace TobiiParser
 {
     class MultipleDirsWorker
     {
+        public static int FixationAddition; //Добавка к продолжительности фиксации, если после фиксации не известно куда человек смотрит.
 
         public static  void ParseInDirectory(string dir, string file_csv, string file_k, string file_reg, string tab2File)
         {
@@ -107,7 +108,7 @@ namespace TobiiParser
            
             FZoneTab fZoneTab = new FZoneTab();
             List<TobiiRecord> FZoneList = fZoneTab.Calculate(FiltredTobiiList, kadrIntervals, tabOfKeys);
-            FZoneList = tobiiCsvReader.ClearFromGarbageZone(FZoneList, -1, 100);
+            FZoneList = tobiiCsvReader.ClearFromGarbageZone(FZoneList, -1, FixationAddition);
             FZoneList = tobiiCsvReader.CompactTobiiRecords(FZoneList, "FZones");
 
             fZoneTab.WriteResult(file_csv.Replace(".csv", ".txt"), FZoneList);

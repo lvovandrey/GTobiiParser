@@ -40,11 +40,7 @@ namespace TobiiParser
             k = Intervals.Where(I => ((I.time_ms_beg <= time_ms) && (I.time_ms_end > time_ms))).FirstOrDefault();
             if (k == null) throw new Exception("Время " + time_ms + " отсутствует в таблице разбивки кадров по времени - KFile.xml");
             return k.GetKadrOnMFI(MFINumber);
-
-
         }
-
-
     }
 
 
