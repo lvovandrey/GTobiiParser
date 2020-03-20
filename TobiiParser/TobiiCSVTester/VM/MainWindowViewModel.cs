@@ -122,10 +122,17 @@ namespace TobiiCSVTester.VM
 
         private async void BuildFilesFillingDiagramsAsync()
         {
-            cur_cts?.Cancel();
+            try
+            {
+                cur_cts?.Cancel();
 
-            cur_cts = new CancellationTokenSource();
-            await Task.Run(() => BuildFilesFillingDiagrams(cur_cts.Token));
+                cur_cts = new CancellationTokenSource();
+                await Task.Run(() => BuildFilesFillingDiagrams(cur_cts.Token));
+            }
+            catch (IOException e)
+            {
+                MainWindow.MessageShowOnSnackBar(e.Message);
+            }
         }
 
         private async Task BuildFilesFillingDiagrams(CancellationToken cancellationToken)

@@ -13,7 +13,7 @@ namespace TobiiCSVTester.VM
         public double Y;
     }
 
-   
+
 
     public class TobiiCSVFile
     {
@@ -61,13 +61,13 @@ namespace TobiiCSVTester.VM
             }
         }
 
-        Dictionary<long, double>  CompactifyTobiiList(List<TobiiRecord> TobiiRecords, int SmoothInterval)
+        Dictionary<long, double> CompactifyTobiiList(List<TobiiRecord> TobiiRecords, int SmoothInterval)
         {
             Dictionary<long, double> Avgs = new Dictionary<long, double>();
-            int Pices = (int)Math.Ceiling( (double)(TobiiRecords.Count() / SmoothInterval));
+            int Pices = (int)Math.Ceiling((double)(TobiiRecords.Count() / SmoothInterval));
             for (int i = 0; i < Pices; i++)
             {
-                double CurSumm=0;
+                double CurSumm = 0;
                 for (int j = i * SmoothInterval; j < (i + 1) * SmoothInterval; j++)
                 {
                     CurSumm += TobiiRecords[j].zones.Count();
@@ -78,8 +78,20 @@ namespace TobiiCSVTester.VM
         }
 
 
-        public List<TobiiRecord> tobiiList =  new List<TobiiRecord>();
-   
+        public List<TobiiRecord> tobiiList = new List<TobiiRecord>();
+
+
+        int ZoneColCountCalc(string[] first_string_arr)
+        {
+            int count = 0;
+            foreach (var colName in first_string_arr)
+            {
+                if (colName.Contains("AOI hit [")) count++;
+            }
+            if (count == 0)
+                throw new Exception("Не могу определить количество столбцов AOIhit");
+            return count;
+        }
 
         public void TobiiCSVRead(string filename, List<TobiiRecord> tobiiList)
         {
@@ -94,6 +106,7 @@ namespace TobiiCSVTester.VM
             {
                 string[] first_string_arr = { "" };
                 first_string_arr = rd.ReadLine().Split(delimiter);
+                ZoneColCount = ZoneColCountCalc(first_string_arr);
                 N_timestampCol = SearchColFirst(first_string_arr, "Recording timestamp");
                 N_firstZoneCol = SearchColFirst(first_string_arr, "AOI hit [");
 
@@ -131,7 +144,7 @@ namespace TobiiCSVTester.VM
             }
 
 
-            
+
         }
 
 
