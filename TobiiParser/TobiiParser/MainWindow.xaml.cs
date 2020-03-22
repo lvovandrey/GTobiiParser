@@ -164,12 +164,39 @@ namespace TobiiParser
 
         private void MenuItem_Click(object sender, RoutedEventArgs e)
         {
-            SpecialFor9_41_SCENARY2.SerializeRFiles(Path.Combine(TextBoxTarget.Text,"R.xlsx"), Path.Combine(TextBoxTarget.Text, "RFile.xml"));
+            new SpecialFor9_41_SCENARY2().SerializeRFiles(Path.Combine(TextBoxTarget.Text,"R.xlsx"), Path.Combine(TextBoxTarget.Text, "RFile.xml"));
         }
 
         private void MenuItem_Click_2(object sender, RoutedEventArgs e)
         {
-            SpecialFor9_41_SCENARY2.SerializeKFiles(Path.Combine(TextBoxTarget.Text, "K.xlsx"), Path.Combine(TextBoxTarget.Text, "KFile.xml"));
+            new SpecialFor9_41_SCENARY2().SerializeKFiles(Path.Combine(TextBoxTarget.Text, "K.xlsx"), Path.Combine(TextBoxTarget.Text, "KFile.xml"));
+        }
+
+        private void MenuItem_Click_3(object sender, RoutedEventArgs e)
+        {
+            MultipleDirsWorker.FixationAddition = 500;
+            if (!int.TryParse(TextBoxFixationAddition.Text, out MultipleDirsWorker.FixationAddition))
+            {
+                System.Windows.MessageBox.Show("Введите корректное значение добавки к фиксациям, в милисекундах"); return;
+            }
+            MultipleDirsWorker.PassAllDIrs_OneRegFile(@TextBoxTarget.Text, this.TextBoxCurDir, this.TextBox1, @"C:\_\Tab2new2.xlsx", TextBoxKadrDefault.Text);
+
+        }
+
+        private void MenuItem_Click_4(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void MenuItem_Click_5(object sender, RoutedEventArgs e)
+        {
+            new SpecialFor9_41_SCENARY4().SerializeRFiles(Path.Combine(TextBoxTarget.Text, "R.xlsx"), Path.Combine(TextBoxTarget.Text, "RFile.xml"));
+
+        }
+
+        private void MenuItem_Click_6(object sender, RoutedEventArgs e)
+        {
+            new SpecialFor9_41_SCENARY4().SerializeKFiles(Path.Combine(TextBoxTarget.Text, "K.xlsx"), Path.Combine(TextBoxTarget.Text, "KFile.xml"));
         }
     }
 }

@@ -108,6 +108,7 @@
     <Compile Include="ResultSeparator.cs" />
     <Compile Include="SpecialFor9_41.cs" />
     <Compile Include="SpecialFor9_41_SCENARY2.cs" />
+    <Compile Include="SpecialFor9_41_SCENARY4.cs" />
     <Compile Include="TabOfKeys.cs" />
     <Compile Include="TobiiCsvReader.cs" />
     <Compile Include="TobiiRecord.cs" />

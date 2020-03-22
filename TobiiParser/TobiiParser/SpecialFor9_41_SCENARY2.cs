@@ -72,9 +72,9 @@ namespace TobiiParser
         /// <summary>
         /// Создание RFile по другому немного
         /// </summary>
-        internal static void CreateRFilesTest()
+        internal virtual void CreateRFilesTest()
         {
-            List<SeparatorIntervals> SeparatorIntervalsList = SeparatorIntervalsReadFromExcel(@"c:\_\1\test.xlsx");
+            List<SeparatorIntervals> SeparatorIntervalsList = this.SeparatorIntervalsReadFromExcel(@"c:\_\1\test.xlsx");
             foreach (var SeparatorIntervals in SeparatorIntervalsList)
             {
                 string Header = "FileID = " + SeparatorIntervals.Id + "\t";
@@ -88,9 +88,9 @@ namespace TobiiParser
         /// <summary>
         /// Создание KFile (раньше не делал) из excel. 
         /// </summary>
-        internal static void CreateKFilesTest()
+        internal virtual void CreateKFilesTest()
         {
-            List<KadrIntervals> KadrIntervalsList = KadrIntervalsReadFromExcel(@"c:\_\1\testK.xlsx");
+            List<KadrIntervals> KadrIntervalsList = this.KadrIntervalsReadFromExcel(@"c:\_\1\testK.xlsx");
             foreach (var KadrIntervals in KadrIntervalsList)
             {
                 string Header = "FileID = " + KadrIntervals.Id + "\t";
@@ -105,7 +105,7 @@ namespace TobiiParser
         /// <summary>
         /// Создание через сериализацию RFile.xml
         /// </summary>
-        internal static void SerializeRFiles(string sourceFilename, string targetRFileName)
+        internal virtual void SerializeRFiles(string sourceFilename, string targetRFileName)
         {
             List<SeparatorIntervals> SeparatorIntervalsList = SeparatorIntervalsReadFromExcel(@sourceFilename);
             XmlSerializer formatter = new XmlSerializer(typeof(List<SeparatorIntervals>));
@@ -119,7 +119,7 @@ namespace TobiiParser
         /// <summary>
         /// Создание через сериализацию KFile.xml (раньше не делал) из excel. 
         /// </summary>
-        internal static void SerializeKFiles(string sourceFilename, string targetKFileName)
+        internal virtual void SerializeKFiles(string sourceFilename, string targetKFileName)
         {
             List<KadrIntervals> KadrIntervalsList = KadrIntervalsReadFromExcel(@sourceFilename);
             XmlSerializer formatter = new XmlSerializer(typeof(List<KadrIntervals>));
@@ -183,7 +183,7 @@ namespace TobiiParser
         /// </summary>
         /// <param name="filename"></param>
         /// <returns></returns>
-        public static List<SeparatorIntervals> SeparatorIntervalsReadFromExcel(string filename)
+        public virtual List<SeparatorIntervals> SeparatorIntervalsReadFromExcel(string filename)
         {
             //считываем данные из Excel файла в двумерный массив
             Excel.Application xlApp = new Excel.Application(); //Excel
@@ -244,7 +244,7 @@ namespace TobiiParser
         /// </summary>
         /// <param name="filename"></param>
         /// <returns></returns>
-        public static List<KadrIntervals> KadrIntervalsReadFromExcel(string filename)
+        public virtual List<KadrIntervals> KadrIntervalsReadFromExcel(string filename)
         {
             //считываем данные из Excel файла в двумерный массив
             Excel.Application xlApp = new Excel.Application(); //Excel
