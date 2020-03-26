@@ -61,8 +61,27 @@ namespace TobiiParser
                 return 1;
             if (AOIHit >= 31 && AOIHit <= 45)
                 return 2;
-            if (AOIHit >= 46)
+            if (AOIHit >= 46 && AOIHit <= 53)
                 return 0;
+            if (AOIHit >= 54 && AOIHit <= 68)
+                return 3;
+            if (AOIHit >= 69)
+                return 0;
+
+            //if (AOIHit >= 1 && AOIHit <= 15)   это для конченого петруши
+            //    return 3;
+            //if (AOIHit >= 16 && AOIHit <= 30)
+            //    return 0;
+            //if (AOIHit >= 31 && AOIHit <= 45)
+            //    return 1;
+            //if (AOIHit >= 46 && AOIHit <= 60)
+            //    return 2;
+            //if (AOIHit >= 60 && AOIHit <= 68)
+            //    return 0;
+            //if (AOIHit >= 69)
+            //    return 0;
+
+
 
             return 0;
         }
