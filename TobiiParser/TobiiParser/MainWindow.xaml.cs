@@ -198,5 +198,15 @@ namespace TobiiParser
         {
             new SpecialFor9_41_SCENARY4().SerializeKFiles(Path.Combine(TextBoxTarget.Text, "K.xlsx"), Path.Combine(TextBoxTarget.Text, "KFile.xml"));
         }
+
+        private void MenuItem_Click_7(object sender, RoutedEventArgs e)
+        {
+            new SpecialFor9_41_SCENARY3().SerializeRFiles(Path.Combine(TextBoxTarget.Text, "R.xlsx"), Path.Combine(TextBoxTarget.Text, "RFile.xml"));
+        }
+
+        private void MenuItem_Click_8(object sender, RoutedEventArgs e)
+        {
+            new SpecialFor9_41_SCENARY3().SerializeKFiles(Path.Combine(TextBoxTarget.Text, "K.xlsx"), Path.Combine(TextBoxTarget.Text, "KFile.xml"));
+        }
     }
 }
