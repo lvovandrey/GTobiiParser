@@ -119,6 +119,9 @@
             <TextBox HorizontalAlignment="Center" Text="{Binding Path=SelectedTobiiCSVFile.Name, UpdateSourceTrigger=PropertyChanged}"
                        Style="{StaticResource MaterialDesignTextAreaTextBox}"
                        TextWrapping="Wrap"/>
+            <TextBox HorizontalAlignment="Right" Text="{Binding Path=SelectedTobiiCSVFile.AOIHitsColumnsCount, UpdateSourceTrigger=PropertyChanged}"
+                       Style="{StaticResource MaterialDesignTextAreaTextBox}"
+                       TextWrapping="Wrap"/>
             <!--<WindowsFormsHost Grid.Row="1">
                 <dvc:Chart x:Name="chart" />
             </WindowsFormsHost>-->

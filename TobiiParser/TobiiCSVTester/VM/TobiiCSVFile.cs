@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using TobiiCSVTester.Abstract;
 
 namespace TobiiCSVTester.VM
 {
@@ -15,7 +16,7 @@ namespace TobiiCSVTester.VM
 
 
 
-    public class TobiiCSVFile
+    public class TobiiCSVFile: INPCBase
     {
         int SmoothInterval = 1000;
 
@@ -41,6 +42,12 @@ namespace TobiiCSVTester.VM
             set;
         }
 
+        public int aOIHitsColumnsCount = 0;
+        public int AOIHitsColumnsCount
+        {
+            get { return aOIHitsColumnsCount; }
+            set { aOIHitsColumnsCount = value; OnPropertyChanged("AOIHitsColumnsCount"); }
+        }
 
 
         public async void ReadTestingInfoAsync()
@@ -107,6 +114,7 @@ namespace TobiiCSVTester.VM
                 string[] first_string_arr = { "" };
                 first_string_arr = rd.ReadLine().Split(delimiter);
                 ZoneColCount = ZoneColCountCalc(first_string_arr);
+                AOIHitsColumnsCount = ZoneColCount;
                 N_timestampCol = SearchColFirst(first_string_arr, "Recording timestamp");
                 N_firstZoneCol = SearchColFirst(first_string_arr, "AOI hit [");
 
