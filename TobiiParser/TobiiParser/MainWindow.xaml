@@ -15,6 +15,9 @@
             <MenuItem Header="Основные операции">
                 <MenuItem Header="9.41" >
                     <MenuItem Header="Разобрать txt файлы в единую таблицу с длительностями фиксаций" Click="MenuItem_Click_1"></MenuItem>
+                    <MenuItem Header="Операции с файлами">
+                        <MenuItem Header="Переименовать файлы в соответствии с ID и таблицей тегов" Click="MenuItem_Click_9"></MenuItem>
+                    </MenuItem>
                     <MenuItem Header="СП">
                         <MenuItem Header="Cортировать по папкам Летчики"  Click="Button_Click_9"></MenuItem>
                         <MenuItem Header="Сорировать по папкам СП" Click="Button_Click_8"></MenuItem>

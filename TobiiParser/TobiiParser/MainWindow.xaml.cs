@@ -208,5 +208,12 @@ namespace TobiiParser
         {
             new SpecialFor9_41_SCENARY3().SerializeKFiles(Path.Combine(TextBoxTarget.Text, "K.xlsx"), Path.Combine(TextBoxTarget.Text, "KFile.xml"));
         }
+
+        //Переименовать файлы в соответствии с ID и таблицей тегов
+        private void MenuItem_Click_9(object sender, RoutedEventArgs e)
+        {
+            SpecialFor9_41.RenameCsvFileAccordingToTagTable(@TextBoxTarget.Text, @"C:\_\TagToId.xlsx", TextBox1);
+        }
     }
 }
+

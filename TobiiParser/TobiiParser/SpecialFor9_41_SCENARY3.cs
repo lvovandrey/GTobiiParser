@@ -39,7 +39,7 @@ namespace TobiiParser
                     int iLastRow = sheet.Cells[sheet.Rows.Count, "A"].End[Excel.XlDirection.xlUp].Row;
                     var arrData = (object[,])sheet.Range["A5:B" + iLastRow].Value; //берём данные с листа Excel
 
-                    for (i = 1; i < arrData.GetUpperBound(0)-1; i++)
+                    for (i = 1; i < arrData.GetUpperBound(0); i++)
                     {
                         double t = (double)arrData[i, 1] * 3_600_000 * 24;
                         long tbeg = (long)t;

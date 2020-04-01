@@ -3,8 +3,11 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Controls;
+using Excel = Microsoft.Office.Interop.Excel;
 
 namespace TobiiParser
 {
@@ -205,7 +208,7 @@ namespace TobiiParser
                 txtFileResult.tags = dirToTagsTmp.Split(separatorDirs).ToList();
 
                 int N_pos = filepath.IndexOf("№"); // ищем позицию номера 
-                txtFileResult.OrderNumber = filepath.Substring(N_pos, 3);     
+                txtFileResult.OrderNumber = filepath.Substring(N_pos, 3);
 
                 txtFileResult.filename = filepath;
 
@@ -218,7 +221,7 @@ namespace TobiiParser
                     TobiiCsvReader.ReadPartOfFile(rd, out big_str); // TODO: я расчитываю что файл режимов будет меньше 10000 строк
                     str_arr = big_str.Split(separator);
 
-                    int  i = 0;
+                    int i = 0;
 
                     for (i = 0; i < str_arr.Length; i++)
                     {
@@ -242,28 +245,28 @@ namespace TobiiParser
         }
 
 
-            //Файл ZonesInterpretation.txt у меня такого формата
-            //  -1	    ?
-            //  0	    ?
-            //  1	    Курс
-            //  2	    АГ
-            //  3	    Вариометр
-            //  4	    Внекаб.обст.
-            //  5 	    Высота
-            //  6	    Перегрузка
-            //  7	    Скорость
-            //  8	    Угол атаки
-            //  9	    ПЛТ другое
-            //  10	    ИКШ-Скорость
-            //  11	    ИКШ-Высота
-            //  12	    ИКШ-Авиагоризонт
-            //  13	    Другое
+        //Файл ZonesInterpretation.txt у меня такого формата
+        //  -1	    ?
+        //  0	    ?
+        //  1	    Курс
+        //  2	    АГ
+        //  3	    Вариометр
+        //  4	    Внекаб.обст.
+        //  5 	    Высота
+        //  6	    Перегрузка
+        //  7	    Скорость
+        //  8	    Угол атаки
+        //  9	    ПЛТ другое
+        //  10	    ИКШ-Скорость
+        //  11	    ИКШ-Высота
+        //  12	    ИКШ-Авиагоризонт
+        //  13	    Другое
 
-            /// <summary>
-            /// Читает файл с интерпретацией зон - перевод номеров зон в их названия
-            /// </summary>
-            /// <param name="filename"></param>
-            /// <returns></returns>
+        /// <summary>
+        /// Читает файл с интерпретацией зон - перевод номеров зон в их названия
+        /// </summary>
+        /// <param name="filename"></param>
+        /// <returns></returns>
         public static Dictionary<string, string> ReadZonesInterpretation(string filename)
         {
             Dictionary<string, string> ZonesInterpretation = new Dictionary<string, string>();
@@ -273,7 +276,7 @@ namespace TobiiParser
                 char delimiter = '\t';
                 string[] str_arr = { "" };
                 string big_str = "";
-                TobiiCsvReader.ReadPartOfFile(rd, out big_str); 
+                TobiiCsvReader.ReadPartOfFile(rd, out big_str);
                 str_arr = big_str.Split(separator);
 
                 int i = 0;
@@ -312,13 +315,13 @@ namespace TobiiParser
                     string s = "";
                     foreach (var tag in r.tags)
                         s += tag + "\t";
-                    s+=r.OrderNumber + "\t";
+                    s += r.OrderNumber + "\t";
                     s += r.filename + "\t";
                     s += (r.tobiiRecords.IndexOf(tr) + 1).ToString() + "\t";
                     s += tr.CurFZone + "\t";
                     s += ZonesInterpretation[tr.CurFZone.ToString()] + "\t";
-                    s += ((double)tr.time_ms)/(24*3_600_000) + "\t";
-                    s += (tr.time_ms- timeBegin) + "\t";
+                    s += ((double)tr.time_ms) / (24 * 3_600_000) + "\t";
+                    s += (tr.time_ms - timeBegin) + "\t";
 
                     if (r.tobiiRecords.IndexOf(tr) + 1 >= r.tobiiRecords.Count())
                     {
@@ -332,6 +335,90 @@ namespace TobiiParser
                     writer.WriteLine(s);
                 }
                 writer.WriteLine("");
+            }
+        }
+
+        /// <summary>
+        /// Переименовать файлы в соответствии с ID и таблицей тегов
+        /// </summary>
+        /// <param name="dir">Директория с csv-файлами</param>
+        /// <param name="TagTableFilename">Путь к таблице тегов файлов по ID</param>
+        public static void RenameCsvFileAccordingToTagTable(string dir, string TagTableFilename, TextBox OuterTextBox, string LastColumn = "G")
+        {
+
+            string[] filescsv = Directory.GetFiles(dir, "*.csv", SearchOption.TopDirectoryOnly);
+            List<string> filesIds = new List<string>();
+            Regex regex = new Regex(@"\d{3}");//в файле будем искать id по признаку три цифры подряд - типа того "123"
+            bool CheckSuccess = true;
+
+            //Перед выполнением проверяем файлы - чтобы не было повторов, чтоб id везде были и только по 1 на файл
+            foreach (var filecsv in filescsv)
+            {
+                string fileShortName = Path.GetFileName(filecsv);
+                MatchCollection matches = regex.Matches(fileShortName);
+                if (matches.Count != 1)
+                {
+                    OuterTextBox.Text += "Не найден id (или более 1) в файле " + fileShortName + "\n";
+                    CheckSuccess = false;
+                }
+                else
+                {
+                    if (filesIds.Contains(matches[0].Value))
+                    {
+                        OuterTextBox.Text += "Повторный id в еще одном файле: " + fileShortName + "\n";
+                        CheckSuccess = false;
+                    }
+                    else
+                    {
+                        filesIds.Add(matches[0].Value);
+                    }
+                }
+            }
+
+            if (!CheckSuccess) return;
+
+            //считываем данные из Excel файла в двумерный массив
+            Excel.Application xlApp = new Excel.Application(); //Excel
+            Excel.Workbook xlWB; //рабочая книга              
+            Excel.Worksheet xlSht; //лист Excel   
+            xlWB = xlApp.Workbooks.Open(TagTableFilename); //название файла Excel    
+            xlSht = xlWB.Worksheets[1]; //название листа или 1-й лист в книге xlSht = xlWB.Worksheets[1];
+
+            int iLastRow = xlSht.Cells[xlSht.Rows.Count, "A"].End[Excel.XlDirection.xlUp].Row;
+            var arrData = (object[,])xlSht.Range["A1:" + LastColumn + iLastRow].Value; //берём данные с листа Excel
+
+            int i;
+            List<string> ids = new List<string>();
+
+            foreach (var filecsv in filescsv)
+            {
+                string fileShortName = Path.GetFileName(filecsv);
+                MatchCollection matches = regex.Matches(fileShortName);
+                string curId = matches[0].Value;
+                bool curIdFindInTagTable = false;
+
+                for (i = 1; i <= arrData.GetUpperBound(0); i++)
+                {
+                    string idFromTagTable = ((string)arrData[i, 4]).Replace("id", "");
+                    if (curId == idFromTagTable)
+                    {
+                        curIdFindInTagTable = true;
+
+                        string NewFileName = (string)arrData[i, 2] + " " +
+                            (string)arrData[i, 3] + " " +
+                            (string)arrData[i, 4] + " " +
+                            (string)arrData[i, 5] + " " +
+                            (string)arrData[i, 6] + " " +
+                            (string)arrData[i, 7] + ".csv";
+
+                        File.Move(filecsv, Path.Combine(dir, NewFileName));
+
+                        break;
+                    }
+                }
+
+                if (!curIdFindInTagTable)
+                    OuterTextBox.Text += "Id файла:     " + fileShortName + "   не найден в " + Path.GetFileName(TagTableFilename) + " \n";
             }
         }
     }
