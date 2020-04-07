@@ -21,6 +21,9 @@
                         <MenuItem Header="Вывести из R-Файла перечень ID" Click="MenuItem_Click_11" ></MenuItem>
                         <MenuItem Header="Вывести из K-Файла перечень ID" Click="MenuItem_Click_12" ></MenuItem>
 
+                        <MenuItem Header="Синхронизировать R-Файл по таблице синхронизации (SyncToID)" Click="MenuItem_Click_13"></MenuItem>
+                        <MenuItem Header="Синхронизировать K-Файл по таблице синхронизации (SyncToID)" Click="MenuItem_Click_14" ></MenuItem>
+
                     </MenuItem>
                     <MenuItem Header="СП">
                         <MenuItem Header="Cортировать по папкам Летчики"  Click="Button_Click_9"></MenuItem>

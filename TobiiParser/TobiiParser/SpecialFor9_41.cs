@@ -507,5 +507,100 @@ namespace TobiiParser
             }
             OuterTextBox.Text += "\n" + "-----------------------";
         }
+
+
+        /// <summary>
+        /// Синхронизировать R-файл в соответствии с ID и таблицей синхронизации
+        /// </summary>
+        /// <param name="file_r">Путь к Rфайлу</param>
+        /// <param name="SyncToIdTableFilename">Путь к таблице синхронизации по ID</param>
+        public static void SyncronizeRFileAccordingToSyncToIdTable(string file_r, string SyncToIdTableFilename, TextBox OuterTextBox)
+        {
+            List<SeparatorIntervals> R = SpecialFor9_41_SCENARY2.DeserializeRFiles(file_r);
+
+            //считываем данные из Excel файла в двумерный массив
+            Excel.Application xlApp = new Excel.Application(); //Excel
+            Excel.Workbook xlWB; //рабочая книга              
+            Excel.Worksheet xlSht; //лист Excel   
+            xlWB = xlApp.Workbooks.Open(SyncToIdTableFilename); //название файла Excel    
+            xlSht = xlWB.Worksheets[1]; //название листа или 1-й лист в книге xlSht = xlWB.Worksheets[1];
+
+            int iLastRow = xlSht.Cells[xlSht.Rows.Count, "A"].End[Excel.XlDirection.xlUp].Row;
+            var arrData = (object[,])xlSht.Range["A1:B" + iLastRow].Value; //берём данные с листа Excel
+
+            int i;
+      
+            foreach (var Intervals in R)
+            {
+                string curId = Intervals.Id;
+                bool curIdFindInSyncTable = false;
+                for (i = 1; i <= arrData.GetUpperBound(0); i++)
+                {
+                    string idFromSyncTable = ((string)arrData[i, 1]);
+                    if (curId == idFromSyncTable)
+                    {
+                        long delta_t = (long)(24 * 3_600_00 * (double)arrData[i, 2]);
+                        curIdFindInSyncTable = true;
+                        foreach (var interval in Intervals.Intervals)
+                        {
+                            interval.Time_ms_beg += delta_t;
+                            interval.Time_ms_end += delta_t;
+                        }
+                        break;
+                    }
+                }
+
+                if (!curIdFindInSyncTable)
+                    OuterTextBox.Text += "Id файла:     " + curId + "   не найден в " + Path.GetFileName(SyncToIdTableFilename) + " \n";
+            }
+            new SpecialFor9_41_SCENARY2().SerializeRFiles(R, file_r.Replace(".xml","_sync.xml"));            
+        }
+
+        /// <summary>
+        /// Синхронизировать K-файл в соответствии с ID и таблицей синхронизации
+        /// </summary>
+        /// <param name="file_k">Путь к Rфайлу</param>
+        /// <param name="SyncToIdTableFilename">Путь к таблице синхронизации по ID</param>
+        public static void SyncronizeKFileAccordingToSyncToIdTable(string file_k, string SyncToIdTableFilename, TextBox OuterTextBox)
+        {
+            List<KadrIntervals> K = SpecialFor9_41_SCENARY2.DeserializeKFiles(file_k);
+
+            //считываем данные из Excel файла в двумерный массив
+            Excel.Application xlApp = new Excel.Application(); //Excel
+            Excel.Workbook xlWB; //рабочая книга              
+            Excel.Worksheet xlSht; //лист Excel   
+            xlWB = xlApp.Workbooks.Open(SyncToIdTableFilename); //название файла Excel    
+            xlSht = xlWB.Worksheets[1]; //название листа или 1-й лист в книге xlSht = xlWB.Worksheets[1];
+
+            int iLastRow = xlSht.Cells[xlSht.Rows.Count, "A"].End[Excel.XlDirection.xlUp].Row;
+            var arrData = (object[,])xlSht.Range["A1:B" + iLastRow].Value; //берём данные с листа Excel
+
+            int i;
+
+            foreach (var Intervals in K)
+            {
+                string curId = Intervals.Id;
+                bool curIdFindInSyncTable = false;
+                for (i = 1; i <= arrData.GetUpperBound(0); i++)
+                {
+                    string idFromSyncTable = ((string)arrData[i, 1]);
+                    if (curId == idFromSyncTable)
+                    {
+                        long delta_t = (long)(24 * 3_600_00 * (double)arrData[i, 2]);
+                        curIdFindInSyncTable = true;
+                        foreach (var interval in Intervals.Intervals)
+                        {
+                            interval.Time_ms_beg += delta_t;
+                            interval.Time_ms_end += delta_t;
+                        }
+                        break;
+                    }
+                }
+
+                if (!curIdFindInSyncTable)
+                    OuterTextBox.Text += "Id файла:     " + curId + "   не найден в " + Path.GetFileName(SyncToIdTableFilename) + " \n";
+            }
+            new SpecialFor9_41_SCENARY2().SerializeKFiles(K, file_k.Replace(".xml", "_sync.xml"));
+        }
     }
 }

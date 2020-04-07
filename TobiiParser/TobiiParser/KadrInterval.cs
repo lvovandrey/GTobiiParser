@@ -14,7 +14,7 @@ namespace TobiiParser
 
 
         public string[] KadrOnMFI;
-        public long time_ms_beg, time_ms_end;
+        public long Time_ms_beg, Time_ms_end;
 
         public KadrInterval()
         {
@@ -24,8 +24,8 @@ namespace TobiiParser
         {
             int i;
             KadrOnMFI = Kadrs;  
-            time_ms_beg = TimeBeg;
-            time_ms_end = TimeEnd;
+            Time_ms_beg = TimeBeg;
+            Time_ms_end = TimeEnd;
         }
 
 
@@ -34,7 +34,7 @@ namespace TobiiParser
         //время в этом промежутке?
         public bool IsTimeHere(long time_ms)
         {
-            if (time_ms >= time_ms_beg && time_ms <= time_ms_end) return true;
+            if (time_ms >= Time_ms_beg && time_ms <= Time_ms_end) return true;
             else return false;
         }
 
@@ -71,13 +71,13 @@ namespace TobiiParser
         {
             foreach (var interval in intervals)
             {
-                long time = interval.time_ms_beg;
+                long time = interval.Time_ms_beg;
                 string s = "";
                 int i;
                 for (i = 0; i <= interval.KadrOnMFI.GetUpperBound(0); i++)
                     s += interval.KadrOnMFI[i] + "\t";
-                s += interval.time_ms_beg.ToString() + "\t"
-                    + interval.time_ms_end.ToString();
+                s += interval.Time_ms_beg.ToString() + "\t"
+                    + interval.Time_ms_end.ToString();
                 writer.WriteLine(s);
             }
         }

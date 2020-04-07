@@ -37,7 +37,7 @@ namespace TobiiParser
         internal string GetKadr(long time_ms, int MFINumber)
         {
             KadrInterval k = new KadrInterval();
-            k = Intervals.Where(I => ((I.time_ms_beg <= time_ms) && (I.time_ms_end > time_ms))).FirstOrDefault();
+            k = Intervals.Where(I => ((I.Time_ms_beg <= time_ms) && (I.Time_ms_end > time_ms))).FirstOrDefault();
             if (k == null) throw new Exception("Время " + time_ms + " отсутствует в таблице разбивки кадров по времени - KFile.xml");
             return k.GetKadrOnMFI(MFINumber);
         }
@@ -149,6 +149,32 @@ namespace TobiiParser
             }
         }
 
+
+        /// <summary>
+        /// Создание через сериализацию RFile.xml
+        /// </summary>
+        internal virtual void SerializeRFiles(List<SeparatorIntervals> SeparatorIntervalsList, string targetRFileName)
+        {
+            XmlSerializer formatter = new XmlSerializer(typeof(List<SeparatorIntervals>));
+
+            using (FileStream fs = new FileStream(@targetRFileName, FileMode.OpenOrCreate))
+            {
+                formatter.Serialize(fs, SeparatorIntervalsList);
+            }
+        }
+
+        /// <summary>
+        /// Создание через сериализацию KFile.xml  
+        /// </summary>
+        internal virtual void SerializeKFiles(List<KadrIntervals> KadrIntervalsList, string targetKFileName)
+        {
+            XmlSerializer formatter = new XmlSerializer(typeof(List<KadrIntervals>));
+
+            using (FileStream fs = new FileStream(@targetKFileName, FileMode.OpenOrCreate))
+            {
+                formatter.Serialize(fs, KadrIntervalsList);
+            }
+        }
 
         /// <summary>
         /// Десериализация RFile.xml
