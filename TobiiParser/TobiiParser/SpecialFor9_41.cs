@@ -536,15 +536,19 @@ namespace TobiiParser
                 bool curIdFindInSyncTable = false;
                 for (i = 1; i <= arrData.GetUpperBound(0); i++)
                 {
-                    string idFromSyncTable = ((string)arrData[i, 1]);
+                    string idFromSyncTable = (arrData[i, 1]).ToString();
                     if (curId == idFromSyncTable)
                     {
-                        long delta_t = (long)(24 * 3_600_00 * (double)arrData[i, 2]);
+                        long delta_t = (long)(24 * 3_600_000 * (double)arrData[i, 2]);
                         curIdFindInSyncTable = true;
                         foreach (var interval in Intervals.Intervals)
                         {
+
                             interval.Time_ms_beg += delta_t;
+                            if (interval.Time_ms_beg < 0) interval.Time_ms_beg = 0;
                             interval.Time_ms_end += delta_t;
+                            if (interval.Time_ms_end < 0) interval.Time_ms_end = 0;
+
                         }
                         break;
                     }
@@ -583,15 +587,24 @@ namespace TobiiParser
                 bool curIdFindInSyncTable = false;
                 for (i = 1; i <= arrData.GetUpperBound(0); i++)
                 {
-                    string idFromSyncTable = ((string)arrData[i, 1]);
+                    string idFromSyncTable = (arrData[i, 1]).ToString();
                     if (curId == idFromSyncTable)
                     {
                         long delta_t = (long)(24 * 3_600_00 * (double)arrData[i, 2]);
                         curIdFindInSyncTable = true;
                         foreach (var interval in Intervals.Intervals)
                         {
-                            interval.Time_ms_beg += delta_t;
+                            if (Intervals.Intervals.IndexOf(interval) != 0)
+                            {
+                                interval.Time_ms_beg += delta_t;
+                                if (interval.Time_ms_beg < 0) interval.Time_ms_beg = 0;
+                            }
+                            else
+                            {
+                                interval.Time_ms_beg = 0;
+                            }
                             interval.Time_ms_end += delta_t;
+                            if (interval.Time_ms_end < 0) interval.Time_ms_end = 0;
                         }
                         break;
                     }

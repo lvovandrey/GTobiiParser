@@ -107,6 +107,7 @@
     <Compile Include="MultipleDirsWorker.cs" />
     <Compile Include="ResultSeparator.cs" />
     <Compile Include="SpecialFor9_41.cs" />
+    <Compile Include="SpecialFor9_41_POSADKI.cs" />
     <Compile Include="SpecialFor9_41_SCENARY2.cs" />
     <Compile Include="SpecialFor9_41_SCENARY3.cs" />
     <Compile Include="SpecialFor9_41_SCENARY4.cs" />

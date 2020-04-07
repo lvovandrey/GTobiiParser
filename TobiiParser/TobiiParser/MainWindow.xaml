@@ -44,6 +44,12 @@
                         <MenuItem Header="Создать RFile (режимы) из xlsx-файлов" Click="MenuItem_Click_7"></MenuItem>
                         <MenuItem Header="Создать KFile (кадры) из xlsx-файлов" Click="MenuItem_Click_8"></MenuItem>
                     </MenuItem>
+
+                    <MenuItem Header="Посадки" >
+                        <MenuItem Header="Обработать" Click="MenuItem_Click_3"/>
+                        <MenuItem Header="Создать RFile (режимы) из xlsx-файлов" Click="MenuItem_Click_15"></MenuItem>
+                        <MenuItem Header="Создать KFile (кадры) из xlsx-файлов" Click="MenuItem_Click_16"></MenuItem>
+                    </MenuItem>
                 </MenuItem>
             </MenuItem>
         </Menu>

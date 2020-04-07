@@ -240,6 +240,16 @@ namespace TobiiParser
         {
             SpecialFor9_41.SyncronizeKFileAccordingToSyncToIdTable(Path.Combine(TextBoxTarget.Text, "KFile.xml"), @"C:\_\SyncToId.xlsx", TextBox1);
         }
+
+        private void MenuItem_Click_15(object sender, RoutedEventArgs e)
+        {
+            new SpecialFor9_41_POSADKI().SerializeRFiles(Path.Combine(TextBoxTarget.Text, "R.xlsx"), Path.Combine(TextBoxTarget.Text, "RFile.xml"));
+        }
+
+        private void MenuItem_Click_16(object sender, RoutedEventArgs e)
+        {
+            new SpecialFor9_41_POSADKI().SerializeKFiles(Path.Combine(TextBoxTarget.Text, "K.xlsx"), Path.Combine(TextBoxTarget.Text, "KFile.xml"));
+        }
     }
 }
 
