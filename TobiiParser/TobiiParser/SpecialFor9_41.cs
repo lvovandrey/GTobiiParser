@@ -421,5 +421,91 @@ namespace TobiiParser
                     OuterTextBox.Text += "Id файла:     " + fileShortName + "   не найден в " + Path.GetFileName(TagTableFilename) + " \n";
             }
         }
+
+        /// <summary>
+        /// Переименовать файлы в соответствии с найденными в них ID 
+        /// </summary>
+        /// <param name="dir">Директория с csv-файлами</param>
+        /// <param name="TagTableFilename">Путь к таблице тегов файлов по ID</param>
+        public static void RenameCsvFileOnlyToID(string dir, TextBox OuterTextBox)
+        {
+
+            string[] filescsv = Directory.GetFiles(dir, "*.csv", SearchOption.TopDirectoryOnly);
+            List<string> filesIds = new List<string>();
+            Regex regex = new Regex(@"\d{3}");//в файле будем искать id по признаку три цифры подряд - типа того "123"
+            bool CheckSuccess = true;
+
+            //Перед выполнением проверяем файлы - чтобы не было повторов, чтоб id везде были и только по 1 на файл
+            foreach (var filecsv in filescsv)
+            {
+                string fileShortName = Path.GetFileName(filecsv);
+                MatchCollection matches = regex.Matches(fileShortName);
+                if (matches.Count != 1)
+                {
+                    OuterTextBox.Text += "Не найден id (или более 1) в файле " + fileShortName + "\n";
+                    CheckSuccess = false;
+                }
+                else
+                {
+                    if (filesIds.Contains(matches[0].Value))
+                    {
+                        OuterTextBox.Text += "Повторный id в еще одном файле: " + fileShortName + "\n";
+                        CheckSuccess = false;
+                    }
+                    else
+                    {
+                        filesIds.Add(matches[0].Value);
+                    }
+                }
+            }
+
+            if (!CheckSuccess) return;
+
+            OuterTextBox.Text += "----------" + "\n" + "Переименовать файлы в соответствии с найденными в них ID в папке " + dir + "\n" + "-----------------------" + "\n";
+
+            foreach (var filecsv in filescsv)
+            {
+                string fileShortName = Path.GetFileName(filecsv);
+                MatchCollection matches = regex.Matches(fileShortName);
+                string curId = matches[0].Value;
+                string NewFileName = "id" + curId + ".csv";
+                 File.Move(filecsv, Path.Combine(dir, NewFileName));
+                OuterTextBox.Text += curId + "\n";
+            }
+
+            OuterTextBox.Text += "\n" + "-----------------------";
+        }
+
+        /// <summary>
+        /// Вывод всех ID, которые есть в R-файле
+        /// </summary>
+        /// <param name="file_r"></param>
+        /// <param name="OuterTextBox"></param>
+        public static void OutputIdFromRFile(string file_r, TextBox OuterTextBox)
+        {
+            List<SeparatorIntervals> Lst = SpecialFor9_41_SCENARY2.DeserializeRFiles(file_r);
+            OuterTextBox.Text += "----------" + "\n" + "Перечень ID в файле " + file_r + "\n" + "-----------------------" + "\n";
+            foreach (var Interval in Lst)
+            {
+                OuterTextBox.Text+= Interval.Id+"\n";
+            }
+            OuterTextBox.Text += "\n" + "-----------------------";
+        }
+
+        /// <summary>
+        /// Вывод всех ID, которые есть в К-файле
+        /// </summary>
+        /// <param name="file_r"></param>
+        /// <param name="OuterTextBox"></param>
+        public static void OutputIdFromKFile(string file_k, TextBox OuterTextBox)
+        {
+            List<KadrIntervals> Lst = SpecialFor9_41_SCENARY2.DeserializeKFiles(file_k);
+            OuterTextBox.Text += "----------" + "\n" + "Перечень ID в файле " + file_k + "\n" + "-----------------------" + "\n";
+            foreach (var Interval in Lst)
+            {
+                OuterTextBox.Text += Interval.Id + "\n";
+            }
+            OuterTextBox.Text += "\n" + "-----------------------";
+        }
     }
 }

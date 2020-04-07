@@ -214,6 +214,22 @@ namespace TobiiParser
         {
             SpecialFor9_41.RenameCsvFileAccordingToTagTable(@TextBoxTarget.Text, @"C:\_\TagToId.xlsx", TextBox1);
         }
+
+        //Переименовать файлы в соответствии с ID котрый найден в их имени
+        private void MenuItem_Click_10(object sender, RoutedEventArgs e)
+        {
+            SpecialFor9_41.RenameCsvFileOnlyToID(@TextBoxTarget.Text, TextBox1);
+        }
+
+        private void MenuItem_Click_11(object sender, RoutedEventArgs e)
+        {
+            SpecialFor9_41.OutputIdFromRFile(Path.Combine(TextBoxTarget.Text, "RFile.xml"), TextBox1);
+        }
+
+        private void MenuItem_Click_12(object sender, RoutedEventArgs e)
+        {
+            SpecialFor9_41.OutputIdFromKFile(Path.Combine(TextBoxTarget.Text, "KFile.xml"), TextBox1);
+        }
     }
 }
 
