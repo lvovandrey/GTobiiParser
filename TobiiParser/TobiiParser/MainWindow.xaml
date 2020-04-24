@@ -36,6 +36,7 @@
                     <MenuItem Header="СЦ2">
                         <MenuItem Header="Создать RFile (режимы) из xlsx-файлов" Click="MenuItem_Click"  ></MenuItem>
                         <MenuItem Header="Создать KFile (кадры) из xlsx-файлов" Click="MenuItem_Click_2"      ></MenuItem>
+                        <MenuItem Header="Объединить одинаковые папки режимов" Click="MenuItem_Click_19"/>
                     </MenuItem>
                     <MenuItem Header="СЦ4" >
                         <MenuItem Header="Обработать" Click="MenuItem_Click_3"/>
@@ -46,6 +47,9 @@
                         <MenuItem Header="Обработать" Click="MenuItem_Click_3"/>
                         <MenuItem Header="Создать RFile (режимы) из xlsx-файлов" Click="MenuItem_Click_7"></MenuItem>
                         <MenuItem Header="Создать KFile (кадры) из xlsx-файлов" Click="MenuItem_Click_8"></MenuItem>
+                        <Separator/>
+                        <MenuItem Header="Объединить одинаковые папки режимов" Click="MenuItem_Click_20"></MenuItem>
+
                     </MenuItem>
 
                     <MenuItem Header="Посадки" >

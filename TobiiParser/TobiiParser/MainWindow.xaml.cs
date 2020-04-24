@@ -260,6 +260,16 @@ namespace TobiiParser
         {
             SpecialFor9_41_SCENARY1.UnionFilesOnRegims(TextBoxTarget.Text);
         }
+
+        private void MenuItem_Click_19(object sender, RoutedEventArgs e)
+        {
+            SpecialFor9_41_SCENARY2.UnionFilesOnRegims(TextBoxTarget.Text);
+        }
+
+        private void MenuItem_Click_20(object sender, RoutedEventArgs e)
+        {
+            SpecialFor9_41_SCENARY3.UnionFilesOnRegims(TextBoxTarget.Text);
+        }
     }
 }
 

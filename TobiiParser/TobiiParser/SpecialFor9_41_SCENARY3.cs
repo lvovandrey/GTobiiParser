@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -158,6 +159,81 @@ namespace TobiiParser
 
 
             return KadrIntervalsList;
+        }
+
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="WhereMustFind"></param>
+        /// <param name="WhatMustFind"></param>
+        /// <returns></returns>
+        static string ContainsAny(string WhereMustFind, string[] WhatMustFind)
+        {
+            foreach (var s in WhatMustFind)
+            {
+                if (WhereMustFind.Contains(s)) return s;
+            }
+            return "";
+        }
+
+        static string IsAnyContains(string[] WhereMustFind, string WhatMustFind)
+        {
+            foreach (var s in WhereMustFind)
+            {
+                if (s.Contains(WhatMustFind)) return s;
+            }
+            return "";
+        }
+
+        public static void UnionFilesOnRegims(string dirMain)
+        {
+            string[] dirs = Directory.GetDirectories(dirMain, "*", SearchOption.AllDirectories);
+            string[] regims =
+                {
+                "_Подготовка",
+                "_Взлёт",
+                "_ДБП_1",
+                "_ДБП_2",
+                "_ДБВ_ОЛС",
+                "_ДБВ_РЛС",
+                "_Возврат",
+                "_Посадка"};
+
+            string[] regims_new =
+                {
+                "№01-Подготовка",
+                "№02-Взлёт",
+                "№03-ДБП_1",
+                "№04-ДБП_2",
+                "№05-ДБВ_ОЛС",
+                "№06-ДБВ_РЛС",
+                "№07-Возврат",
+                "№08-Посадка"};
+
+
+            foreach (var dir in dirs)
+            {
+                string regim = ContainsAny(dir, regims).Trim('_');
+                if (regim != "")
+                {
+                    string HigherDir = Path.GetDirectoryName(dir);
+                    string newRegim = IsAnyContains(regims_new, regim).Trim('.');
+                    string NewDir = Path.Combine(HigherDir, newRegim);
+                    if (!Directory.Exists(NewDir))
+                        Directory.CreateDirectory(NewDir);
+
+                    string[] files = Directory.GetFiles(dir);
+                    foreach (var file in files)
+                    {
+                        string newFileName = Path.Combine(NewDir, Path.GetFileName(file));
+                        File.Move(file, newFileName);
+                    }
+                    Directory.Delete(dir, false);
+                }
+            }
+
+
         }
 
 
