@@ -250,6 +250,16 @@ namespace TobiiParser
         {
             new SpecialFor9_41_POSADKI().SerializeKFiles(Path.Combine(TextBoxTarget.Text, "K.xlsx"), Path.Combine(TextBoxTarget.Text, "KFile.xml"));
         }
+
+        private void MenuItem_Click_17(object sender, RoutedEventArgs e)
+        {
+            SpecialFor9_41.CopyFilesInDirsAccordingTagsInFilename(TextBoxTarget.Text, TextBoxTarget_Copy.Text, TextBox1);
+        }
+
+        private void MenuItem_Click_18(object sender, RoutedEventArgs e)
+        {
+            SpecialFor9_41_SCENARY1.UnionFilesOnRegims(TextBoxTarget.Text);
+        }
     }
 }
 

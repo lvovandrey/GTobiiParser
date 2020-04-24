@@ -111,7 +111,7 @@ namespace TobiiParser
             FZoneList = tobiiCsvReader.ClearFromGarbageZone(FZoneList, -1, FixationAddition);
             FZoneList = tobiiCsvReader.CompactTobiiRecords(FZoneList, "FZones");
 
-            fZoneTab.WriteResult(file_csv.Replace(".csv", ".txt"), FZoneList);
+           // fZoneTab.WriteResult(file_csv.Replace(".csv", ".txt"), FZoneList);
 
             SeparatorIntervals separatorIntervals = SpecialFor9_41_SCENARY2.GetSeparatorIntervalsInXmlKFile(file_r, FileId);
 

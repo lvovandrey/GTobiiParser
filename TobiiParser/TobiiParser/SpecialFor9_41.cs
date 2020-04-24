@@ -615,5 +615,46 @@ namespace TobiiParser
             }
             new SpecialFor9_41_SCENARY2().SerializeKFiles(K, file_k.Replace(".xml", "_sync.xml"));
         }
+
+        /// <summary>
+        /// Взять кучу файлов в директории, разбить их имена на части, в соответствии с этими частями сформировать иерархию папок и скопировтать туда исходые файлы
+        /// </summary>
+        /// <param name="dir">Директория с иходными файлами</param>
+        /// <param name="targetDir">Куда будем копировать файлы</param>
+        /// <param name="OuterTextBox">Консолька типа TextBox</param>
+        /// <param name="separator">Разделитель для разбивки имен файлов</param>
+        /// <param name="filemask">Маска файлов</param>
+        public static void CopyFilesInDirsAccordingTagsInFilename(string dir, string targetDir, TextBox OuterTextBox, char separator = ' ', string filemask = "*.txt" )
+        {
+            string[] files = Directory.GetFiles(dir, filemask, SearchOption.TopDirectoryOnly);
+            foreach (string fullfilepath in files)
+            {
+                string filepath = Path.GetFileNameWithoutExtension(fullfilepath);
+                string[] tagsArr = filepath.Split(separator);
+                Queue<string> tags = new Queue<string>(tagsArr);
+                string CurDir = targetDir;
+                while (tags.Count() > 0)
+                {
+                    string tag = tags.Dequeue();
+                    CurDir = Path.Combine(CurDir, tag);
+                    try
+                    {
+                        if (!Directory.Exists(CurDir))
+                            Directory.CreateDirectory(CurDir);
+                    }
+                    catch (Exception)
+                    {
+                        OuterTextBox.Text += "Не удается создать директорию " + CurDir+ "    Обрабатывался файл "+ fullfilepath;
+                        return;
+                    }
+
+
+                }
+                File.Copy(fullfilepath, Path.Combine(CurDir, Path.GetFileName(fullfilepath)));
+            }
+        }
+
+
+
     }
 }

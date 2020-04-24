@@ -81,7 +81,7 @@ namespace TobiiParser
             {
                 //Сначала запишем файл в ту же папку
                 int number = intervals.IndexOf(interval);
-                string filename = DirectoryForFiles + prefixfilename + "_№" + number.ToString() + " " + interval.Name + ".txt";
+                string filename = DirectoryForFiles + prefixfilename + " №" + number.ToString("D2") + "_" + interval.Name.Replace(" ","_") + ".txt";
                 WriteResult(filename, interval.records);
 
                 ////А теперь в свою собственную   - А вот не надо в собственную

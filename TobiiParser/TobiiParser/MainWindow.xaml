@@ -18,11 +18,14 @@
                     <MenuItem Header="Операции с файлами">
                         <MenuItem Header="Переименовать файлы в соответствии с ID и таблицей тегов" Click="MenuItem_Click_9"></MenuItem>
                         <MenuItem Header="Переименовать файлы в просто по найденным в их именах ID" Click="MenuItem_Click_10" ></MenuItem>
+                        <Separator/>
                         <MenuItem Header="Вывести из R-Файла перечень ID" Click="MenuItem_Click_11" ></MenuItem>
                         <MenuItem Header="Вывести из K-Файла перечень ID" Click="MenuItem_Click_12" ></MenuItem>
-
+                        <Separator/>
                         <MenuItem Header="Синхронизировать R-Файл по таблице синхронизации (SyncToID)" Click="MenuItem_Click_13"></MenuItem>
                         <MenuItem Header="Синхронизировать K-Файл по таблице синхронизации (SyncToID)" Click="MenuItem_Click_14" ></MenuItem>
+                        <Separator/>
+                        <MenuItem Header="Скопировать файлы txt создав иерархию папок" Click="MenuItem_Click_17"></MenuItem>
 
                     </MenuItem>
                     <MenuItem Header="СП">
@@ -49,6 +52,15 @@
                         <MenuItem Header="Обработать" Click="MenuItem_Click_3"/>
                         <MenuItem Header="Создать RFile (режимы) из xlsx-файлов" Click="MenuItem_Click_15"></MenuItem>
                         <MenuItem Header="Создать KFile (кадры) из xlsx-файлов" Click="MenuItem_Click_16"></MenuItem>
+                    </MenuItem>
+
+                    <MenuItem Header="СЦ1" >
+                        <MenuItem Header="Обработать" Click="MenuItem_Click_3"/>
+                        <MenuItem Header="Создать RFile (режимы) из xlsx-файлов" Click="MenuItem_Click_15"></MenuItem>
+                        <MenuItem Header="Создать KFile (кадры) из xlsx-файлов" Click="MenuItem_Click_16"></MenuItem>
+                        <Separator/>
+                        <MenuItem Header="Объединить одинаковые папки режимов" Click="MenuItem_Click_18"></MenuItem>
+
                     </MenuItem>
                 </MenuItem>
             </MenuItem>
