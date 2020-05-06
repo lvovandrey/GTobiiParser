@@ -111,12 +111,12 @@ namespace TobiiParser
             FZoneList = tobiiCsvReader.ClearFromGarbageZone(FZoneList, -1, FixationAddition);
             FZoneList = tobiiCsvReader.CompactTobiiRecords(FZoneList, "FZones");
 
-           // fZoneTab.WriteResult(file_csv.Replace(".csv", ".txt"), FZoneList);
+            fZoneTab.WriteResult(file_csv.Replace(".csv", ".txt"), FZoneList);
 
-            SeparatorIntervals separatorIntervals = SpecialFor9_41_SCENARY2.GetSeparatorIntervalsInXmlKFile(file_r, FileId);
+           // SeparatorIntervals separatorIntervals = SpecialFor9_41_SCENARY2.GetSeparatorIntervalsInXmlKFile(file_r, FileId);
 
-            ResultSeparator resultSeparator = new ResultSeparator(dir + @"\reg\", separatorIntervals.Intervals, FZoneList, Path.GetFileName(file_csv).Replace(".csv", "_"));
-            resultSeparator.Separate();
+           // ResultSeparator resultSeparator = new ResultSeparator(dir + @"\reg\", separatorIntervals.Intervals, FZoneList, Path.GetFileName(file_csv).Replace(".csv", "_"));
+           // resultSeparator.Separate();
         }
 
         internal static async void RFilesGenerate(string mainDir, TextBox textBox, TextBox Big_textBox)

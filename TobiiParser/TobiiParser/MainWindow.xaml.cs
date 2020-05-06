@@ -270,6 +270,11 @@ namespace TobiiParser
         {
             SpecialFor9_41_SCENARY3.UnionFilesOnRegims(TextBoxTarget.Text);
         }
+
+        private void MenuItem_Click_21(object sender, RoutedEventArgs e)
+        {
+            new SpecialFor9_41_AIVAZYAN().CalculateSaccades(TextBoxTarget.Text);
+        }
     }
 }
 

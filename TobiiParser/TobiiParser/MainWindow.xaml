@@ -66,6 +66,10 @@
                         <MenuItem Header="Объединить одинаковые папки режимов" Click="MenuItem_Click_18"></MenuItem>
 
                     </MenuItem>
+                    <MenuItem Header="Айвазянова задача (скользящее окно)" >
+                        <MenuItem Header="Вычислить кол-во переключений между зонами" Click="MenuItem_Click_21" />
+
+                    </MenuItem>
                 </MenuItem>
             </MenuItem>
         </Menu>
