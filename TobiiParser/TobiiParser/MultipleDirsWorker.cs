@@ -13,11 +13,11 @@ namespace TobiiParser
     {
         public static int FixationAddition; //Добавка к продолжительности фиксации, если после фиксации не известно куда человек смотрит.
 
-        public static  void ParseInDirectory(string dir, string file_csv, string file_k, string file_reg, string tab2File)
+        public static  void ParseInDirectory(string dir, string file_csv, string file_k, string file_reg, string tab2File, int NZones)
         {
             TobiiCsvReader tobiiCsvReader = new TobiiCsvReader();
             List<TobiiRecord> tobiiRecords = new List<TobiiRecord>();
-            tobiiCsvReader.TobiiCSCRead(file_csv, tobiiRecords);
+            tobiiCsvReader.TobiiCSCRead(file_csv, tobiiRecords, NZones);
             List<TobiiRecord> FiltredTobiiList = tobiiCsvReader.CompactTobiiRecords(tobiiRecords);
             TabOfKeys tabOfKeys = ExcelReader.ReadTabOfKeys(tab2File, "T");
             List<KadrInTime> kadrInTimes = ExcelReader.ReadKadrSets(file_k);
@@ -33,7 +33,7 @@ namespace TobiiParser
             resultSeparator.Separate();
         }
 
-        public static async void PassAllDIrs(string mainDir, TextBox textBox, TextBox Big_textBox, string tab2File)
+        public static async void PassAllDIrs(string mainDir, TextBox textBox, TextBox Big_textBox, string tab2File, int NZones)
         {
             string[] dirs = Directory.GetDirectories(mainDir, "*", SearchOption.AllDirectories);
             foreach (var dir in dirs)
@@ -50,14 +50,14 @@ namespace TobiiParser
 
 
                 textBox.Text = "Обрабатываю " + dir;
-                await Task.Run(()=>ParseInDirectory(dir,file_csv, file_k, file_reg, tab2File));
+                await Task.Run(()=>ParseInDirectory(dir,file_csv, file_k, file_reg, tab2File, NZones));
             }
 
             textBox.Text = "Обработка завершена";
         }
 
 
-        public static async void PassAllDIrs_OneRegFile(string mainDir, TextBox textBox, TextBox Big_textBox, string tab2File, string KadrDefault="")
+        public static async void PassAllDIrs_OneRegFile(string mainDir, TextBox textBox, TextBox Big_textBox, string tab2File,int NZones, string KadrDefault="")
         {
             string[] dirs = Directory.GetDirectories(mainDir, "*", SearchOption.AllDirectories);
             foreach (var dir in dirs)
@@ -83,17 +83,17 @@ namespace TobiiParser
                 }
 
                 textBox.Text = "Обрабатываю " + dir;
-                await Task.Run(() => ParseInDirectory_OneRegFile(dir, file_csv, file_k, file_r, tab2File, KadrDefault));
+                await Task.Run(() => ParseInDirectory_OneRegFile(dir, file_csv, file_k, file_r, tab2File, NZones, KadrDefault));
             }
 
             textBox.Text = "Обработка завершена";
         }
 
-        private static void ParseInDirectory_OneRegFile(string dir, string file_csv, string file_k, string file_r, string tab2File, string kadrDefault="")
+        private static void ParseInDirectory_OneRegFile(string dir, string file_csv, string file_k, string file_r, string tab2File, int NZones, string kadrDefault="")
         {
             TobiiCsvReader tobiiCsvReader = new TobiiCsvReader();
             List<TobiiRecord> tobiiRecords = new List<TobiiRecord>();
-            tobiiCsvReader.TobiiCSCRead(file_csv, tobiiRecords);
+            tobiiCsvReader.TobiiCSCRead(file_csv, tobiiRecords, NZones);
             List<TobiiRecord> FiltredTobiiList = tobiiCsvReader.CompactTobiiRecords(tobiiRecords);
             TabOfKeys tabOfKeys = ExcelReader.ReadTabOfKeys(tab2File, "T");
 

@@ -67,8 +67,9 @@
 
                     </MenuItem>
                     <MenuItem Header="Айвазянова задача (скользящее окно)" >
+                        <MenuItem Header="Синхронизация первичных файлов (конвертирование их в Кисляковское(стендовое) время)" Click="MenuItem_Click_23"/>
                         <MenuItem Header="Вычислить кол-во переключений между зонами" Click="MenuItem_Click_21" />
-
+                        <MenuItem Header="Преобразовать txt-файлы по 5Гц" Click="MenuItem_Click_22"/>
                     </MenuItem>
                 </MenuItem>
             </MenuItem>
@@ -101,6 +102,8 @@
             <Label Content="Кадр по умолчанию" HorizontalAlignment="Left" Margin="314,112,0,0" VerticalAlignment="Top"/>
             <TextBox x:Name="TextBoxFixationAddition" HorizontalAlignment="Left"  Height="23" Margin="198,136,0,0" TextWrapping="Wrap" Text="500" VerticalAlignment="Top" Width="72"/>
             <TextBlock Text="Прибавка к фиксации, мсек" TextWrapping="Wrap" HorizontalAlignment="Left" Margin="198,112,0,0" VerticalAlignment="Top" Height="24" Width="87" FontSize="10"/>
+            <TextBox x:Name="TextBoxNZones" HorizontalAlignment="Left"  Height="23" Margin="314,71,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="72"/>
+            <TextBlock Text="Кол-во зон" TextWrapping="Wrap" HorizontalAlignment="Left" Margin="314,55,0,0" VerticalAlignment="Top" Height="19" Width="87" FontSize="10"/>
 
         </Grid>
     </Grid>

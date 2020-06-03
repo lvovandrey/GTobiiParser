@@ -37,7 +37,13 @@ namespace TobiiParser
             string filename = @"C:\tmp\22.csv";
             tobiiCsvReader.tobiiList = new List<TobiiRecord>(500000);
             tobiiCsvReader.FiltredTobiiList = new List<TobiiRecord>();
-            tobiiCsvReader.TobiiCSCRead(filename, tobiiCsvReader.tobiiList);
+            int NZones = 0;
+            if (!int.TryParse(TextBoxNZones.Text, out NZones))
+            {
+                System.Windows.MessageBox.Show("Задайте кол-во зон");
+                return;
+            }
+            tobiiCsvReader.TobiiCSCRead(filename, tobiiCsvReader.tobiiList,NZones);
 
 
 
@@ -86,7 +92,13 @@ namespace TobiiParser
             {
                 System.Windows.MessageBox.Show("Введите корректное значение добавки к фиксациям, в милисекундах"); return;
             }
-            MultipleDirsWorker.PassAllDIrs_OneRegFile(@TextBoxTarget.Text, this.TextBoxCurDir, this.TextBox1, @"C:\_\Tab2new2.xlsx", TextBoxKadrDefault.Text);
+            int NZones = 0;
+            if (!int.TryParse(TextBoxNZones.Text, out NZones))
+            {
+                System.Windows.MessageBox.Show("Задайте кол-во зон");
+                return;
+            }
+            MultipleDirsWorker.PassAllDIrs_OneRegFile(@TextBoxTarget.Text, this.TextBoxCurDir, this.TextBox1, @"C:\_\Tab2new2.xlsx",NZones, TextBoxKadrDefault.Text);
         }
 
         private void Button_Click_4(object sender, RoutedEventArgs e)
@@ -179,7 +191,13 @@ namespace TobiiParser
             {
                 System.Windows.MessageBox.Show("Введите корректное значение добавки к фиксациям, в милисекундах"); return;
             }
-            MultipleDirsWorker.PassAllDIrs_OneRegFile(@TextBoxTarget.Text, this.TextBoxCurDir, this.TextBox1, @"C:\_\Tab2new2.xlsx", TextBoxKadrDefault.Text);
+            int NZones = 0;
+            if (!int.TryParse(TextBoxNZones.Text, out NZones))
+            {
+                System.Windows.MessageBox.Show("Задайте кол-во зон");
+                return;
+            }
+            MultipleDirsWorker.PassAllDIrs_OneRegFile(@TextBoxTarget.Text, this.TextBoxCurDir, this.TextBox1, @"C:\_\Tab2new2.xlsx", NZones, TextBoxKadrDefault.Text);
 
         }
 
@@ -274,6 +292,16 @@ namespace TobiiParser
         private void MenuItem_Click_21(object sender, RoutedEventArgs e)
         {
             new SpecialFor9_41_AIVAZYAN().CalculateSaccades(TextBoxTarget.Text);
+        }
+
+        private void MenuItem_Click_22(object sender, RoutedEventArgs e)
+        {
+            new SpecialFor9_41_AIVAZYAN().ConvertTo5Hz(TextBoxTarget.Text);
+        }
+
+        private void MenuItem_Click_23(object sender, RoutedEventArgs e)
+        {
+            new SpecialFor9_41_AIVAZYAN().SyncronizeCommonTxtFiles(TextBoxTarget.Text, @"c:\_\SyncToID.txt");
         }
     }
 }

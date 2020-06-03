@@ -12,14 +12,13 @@ namespace TobiiParser
         public List<TobiiRecord> tobiiList;
         public List<TobiiRecord> FiltredTobiiList;
 
-        public void TobiiCSCRead(string filename, List<TobiiRecord> tobiiList)
+        public void TobiiCSCRead(string filename, List<TobiiRecord> tobiiList, int ZoneColCount)
         {
 
             char separator = '\n';
             char delimiter = '\t';
 
             int N_timestampCol = 0, N_firstZoneCol = 0;
-            int ZoneColCount = 53;
             long i = 0;
             using (StreamReader rd = new StreamReader(new FileStream(filename, FileMode.Open)))
             {
