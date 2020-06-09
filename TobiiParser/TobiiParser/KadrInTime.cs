@@ -90,7 +90,7 @@ namespace TobiiParser
         public static string GetKadr(KadrInTime kadrInTime, int tobiiZone)
         {
             if (kadrInTime == null) return "";
-            if (tobiiZone >= 1 && tobiiZone <= 23)
+            if (tobiiZone >= 1 && tobiiZone <= 13)
             { return kadrInTime.OnMainMFI; }
             if (tobiiZone >= 14 && tobiiZone <= 26)
             { return kadrInTime.OnCenterMFI; }
