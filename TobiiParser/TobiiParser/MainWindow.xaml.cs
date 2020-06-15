@@ -303,6 +303,16 @@ namespace TobiiParser
         {
             new SpecialFor9_41_AIVAZYAN().SyncronizeCommonTxtFiles(TextBoxTarget.Text, @"c:\_\SyncToID.txt");
         }
+
+        private void MenuItem_Click_24(object sender, RoutedEventArgs e)
+        {
+            new SpecialFor9_41_SP_NewProcessing().SerializeRFiles(Path.Combine(TextBoxTarget.Text, "R.xlsx"), Path.Combine(TextBoxTarget.Text, "RFile.xml"));
+        }
+
+        private void MenuItem_Click_25(object sender, RoutedEventArgs e)
+        {
+            new SpecialFor9_41_SP_NewProcessing().SerializeKFiles(Path.Combine(TextBoxTarget.Text, "K.xlsx"), Path.Combine(TextBoxTarget.Text, "KFile.xml"));
+        }
     }
 }
 

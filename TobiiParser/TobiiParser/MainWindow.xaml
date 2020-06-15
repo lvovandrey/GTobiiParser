@@ -76,6 +76,12 @@
                         <MenuItem Header="Создать RFile (режимы) из xlsx-файлов" Click="MenuItem_Click_5"></MenuItem>
                         <MenuItem Header="Создать KFile (кадры) из xlsx-файлов" Click="MenuItem_Click_6"></MenuItem>
                     </MenuItem>
+                    <MenuItem Header="СП дообработка (при первом движении)" >
+                        <MenuItem Header="Обработать" Click="MenuItem_Click_3"/>
+                        <MenuItem Header="Создать RFile (режимы) из xlsx-файлов" Click="MenuItem_Click_24"></MenuItem>
+                        <MenuItem Header="Создать KFile (кадры) из xlsx-файлов" Click="MenuItem_Click_25"></MenuItem>
+                    </MenuItem>
+
                 </MenuItem>
             </MenuItem>
         </Menu>
