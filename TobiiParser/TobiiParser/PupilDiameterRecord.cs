@@ -27,5 +27,24 @@ namespace TobiiParser
     }
 
 
+    public enum EyeMovementType
+    {
+        Fixation,
+        Saccade,
+        Search,
+        Other
+    }
+
+    //Fixations - Saccades - Searches 
+    public class EyeMovementEventRecord 
+    {
+        public long time_ms;
+        public long duraion_ms;
+
+        public EyeMovementType Type;
+    }
+
+
+
 
 }
