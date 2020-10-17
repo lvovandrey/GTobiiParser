@@ -11,7 +11,7 @@ namespace TobiiParser
 {
     class MultipleDirsWorker
     {
-        public static int FixationAddition; //Добавка к продолжительности фиксации, если после фиксации не известно куда человек смотрит.
+        public static int FixationAddition=500; //Добавка к продолжительности фиксации, если после фиксации не известно куда человек смотрит.
 
         public static  void ParseInDirectory(string dir, string file_csv, string file_k, string file_reg, string tab2File, int NZones)
         {
@@ -31,6 +31,22 @@ namespace TobiiParser
             List<Interval> intervals = ExcelReader.SeparatorIntervalsReadFromExcel(file_reg);
             ResultSeparator resultSeparator = new ResultSeparator(dir+@"\reg\", intervals, FZoneList, Path.GetFileName(file_csv).Replace(".csv", "_"));
             resultSeparator.Separate();
+        }
+
+        public static void ParseInDirectory(string dir, string file_csv, string tab2File, int NZones)
+        {
+            TobiiCsvReader tobiiCsvReader = new TobiiCsvReader();
+            List<TobiiRecord> tobiiRecords = new List<TobiiRecord>();
+            tobiiCsvReader.TobiiCSCRead(file_csv, tobiiRecords, NZones);
+            List<TobiiRecord> FiltredTobiiList = tobiiCsvReader.CompactTobiiRecords(tobiiRecords);
+            TabOfKeys tabOfKeys = ExcelReader.ReadTabOfKeys(tab2File, "T");
+            FZoneTab fZoneTab = new FZoneTab();
+
+            List<TobiiRecord> FZoneList = fZoneTab.Calculate(FiltredTobiiList,  tabOfKeys);
+            FZoneList = tobiiCsvReader.ClearFromGarbageZone(FZoneList, -1, 500);
+            FZoneList = tobiiCsvReader.CompactTobiiRecords(FZoneList, "FZones");
+
+            fZoneTab.WriteResult(file_csv.Replace(".csv", ".txt"), FZoneList);
         }
 
         public static async void PassAllDIrs(string mainDir, TextBox textBox, TextBox Big_textBox, string tab2File, int NZones)
@@ -88,6 +104,46 @@ namespace TobiiParser
 
             textBox.Text = "Обработка завершена";
         }
+        public static async void PassAllDIrs_WithoutKAndRFiles(string mainDir, TextBox textBox, TextBox Big_textBox, string tab2File, int NZones, string KadrDefault = "")
+        {
+            string[] dirs = Directory.GetDirectories(mainDir, "*", SearchOption.AllDirectories);
+            foreach (var dir in dirs)
+            {
+                string file_csv, file_k, file_r;
+                string[] filescsv = Directory.GetFiles(dir, "*.csv", SearchOption.TopDirectoryOnly);
+                if (filescsv.Count() > 1) { Big_textBox.Text += "В директории " + dir + "       содержится более 1 файла csv" + Environment.NewLine; continue; }
+                else if (filescsv.Count() < 1) { Big_textBox.Text += "В директории " + dir + "          нет файла csv" + Environment.NewLine; continue; }
+                file_csv = filescsv[0];
+
+                textBox.Text = "Обрабатываю " + dir;
+                await Task.Run(() => ParseInDirectory_WithoutKAndRFiles(dir, file_csv, tab2File, NZones, KadrDefault));
+            }
+
+            textBox.Text = "Обработка завершена";
+        }
+
+        private static void ParseInDirectory_WithoutKAndRFiles(string dir, string file_csv, string tab2File, int NZones, string kadrDefault = "")
+        {
+            TobiiCsvReader tobiiCsvReader = new TobiiCsvReader();
+            List<TobiiRecord> tobiiRecords = new List<TobiiRecord>();
+            tobiiCsvReader.TobiiCSCRead(file_csv, tobiiRecords, NZones);
+            List<TobiiRecord> FiltredTobiiList = tobiiCsvReader.CompactTobiiRecords(tobiiRecords);
+            TabOfKeys tabOfKeys = ExcelReader.ReadTabOfKeys(tab2File, "B");
+
+            Regex regex = new Regex(@"id\d{3}");
+            MatchCollection matches = regex.Matches(Path.GetFileName(file_csv));
+            if (matches.Count > 1 || matches.Count == 0) { MessageBox.Show("В имени файла " + file_csv + " найдено неверное кол-во id (0 или более 1)"); return; }
+            string FileId = matches[0].Value.Replace("id", "");
+
+           
+            FZoneTab fZoneTab = new FZoneTab();
+            List<TobiiRecord> FZoneList = fZoneTab.Calculate(FiltredTobiiList, tabOfKeys);
+            FZoneList = tobiiCsvReader.ClearFromGarbageZone(FZoneList, -1, FixationAddition);
+            FZoneList = tobiiCsvReader.CompactTobiiRecords(FZoneList, "FZones");
+
+            fZoneTab.WriteResult(file_csv.Replace(".csv", ".txt"), FZoneList);
+        }
+
 
         private static void ParseInDirectory_OneRegFile(string dir, string file_csv, string file_k, string file_r, string tab2File, int NZones, string kadrDefault="")
         {
@@ -118,6 +174,8 @@ namespace TobiiParser
             ResultSeparator resultSeparator = new ResultSeparator(dir + @"\reg\", separatorIntervals.Intervals, FZoneList, Path.GetFileName(file_csv).Replace(".csv", "_"));
             resultSeparator.Separate();
         }
+
+
 
         internal static async void RFilesGenerate(string mainDir, TextBox textBox, TextBox Big_textBox)
         {

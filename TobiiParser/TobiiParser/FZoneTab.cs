@@ -38,6 +38,26 @@ namespace TobiiParser
         }
 
 
+        public List<TobiiRecord> Calculate(List<TobiiRecord> tobiiRecords, TabOfKeys tabOfKeys)
+        {
+           
+            foreach (var TR in tobiiRecords)
+            {
+                foreach (var zone in TR.zones)
+                    TR.fzones.Add(tabOfKeys.GetFuncZone(zone, "ПИЛ"));
+
+                TR.fzones = TR.fzones.Distinct().ToList();
+
+                if (TR.fzones.Count() > 1)
+                    if (TR.fzones.Contains(14)) TR.fzones.Remove(14);
+                if (TR.fzones.Count() > 0)
+                    TR.CurFZone = TR.fzones.Last();
+                if (TR.fzones.Count() == 0)
+                    TR.CurFZone = -1;
+            }
+            return tobiiRecords;
+        }
+
         /// <summary>
         /// По моему это бесполезно комментировать.... 
         /// Короче тут происходит самое основное - вроде как смотрится каждая строка, потом выясняется в каком она кадре

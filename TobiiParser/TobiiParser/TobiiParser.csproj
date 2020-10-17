@@ -105,6 +105,7 @@
     <Compile Include="KadrInterval.cs" />
     <Compile Include="KadrInTime.cs" />
     <Compile Include="MultipleDirsWorker.cs" />
+    <Compile Include="PupilDiameterRecord.cs" />
     <Compile Include="ResultSeparator.cs" />
     <Compile Include="SpecialFor9_41.cs" />
     <Compile Include="SpecialFor9_41_AIVAZYAN.cs" />

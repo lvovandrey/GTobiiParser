@@ -313,6 +313,29 @@ namespace TobiiParser
         {
             new SpecialFor9_41_SP_NewProcessing().SerializeKFiles(Path.Combine(TextBoxTarget.Text, "K.xlsx"), Path.Combine(TextBoxTarget.Text, "KFile.xml"));
         }
+
+        private void MenuItem_Click_26(object sender, RoutedEventArgs e)
+        {
+            MultipleDirsWorker.FixationAddition = 500;
+            if (!int.TryParse(TextBoxFixationAddition.Text, out MultipleDirsWorker.FixationAddition))
+            {
+                System.Windows.MessageBox.Show("Введите корректное значение добавки к фиксациям, в милисекундах"); return;
+            }
+            int NZones = 0;
+            if (!int.TryParse(TextBoxNZones.Text, out NZones))
+            {
+                System.Windows.MessageBox.Show("Задайте кол-во зон");
+                return;
+            }
+            MultipleDirsWorker.PassAllDIrs_WithoutKAndRFiles(@TextBoxTarget.Text, this.TextBoxCurDir, this.TextBox1, @"C:\__\Tab2new2.xlsx", NZones, TextBoxKadrDefault.Text);
+
+
+        }
+
+        private void MenuItem_Click_27(object sender, RoutedEventArgs e)
+        {
+            SpecialFor9_41_OPERATOR.ParseForSpecialGazeParams(@TextBoxTarget.Text, this.TextBoxCurDir, this.TextBox1);
+        }
     }
 }
 
