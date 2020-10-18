@@ -40,7 +40,7 @@ namespace TobiiParser
 
         public List<TobiiRecord> Calculate(List<TobiiRecord> tobiiRecords, TabOfKeys tabOfKeys)
         {
-           
+
             foreach (var TR in tobiiRecords)
             {
                 foreach (var zone in TR.zones)
@@ -48,8 +48,16 @@ namespace TobiiParser
 
                 TR.fzones = TR.fzones.Distinct().ToList();
 
+                if (TR.fzones.Count() > 1) 
+                    if (TR.zones.Contains(4))
+                        TR.fzones.Remove(4);
                 if (TR.fzones.Count() > 1)
-                    if (TR.fzones.Contains(14)) TR.fzones.Remove(14);
+                    if (TR.zones.Contains(5))
+                        TR.fzones.Remove(5);
+                if (TR.fzones.Count() > 1)
+                    if (TR.zones.Contains(6))
+                        TR.fzones.Remove(6);
+
                 if (TR.fzones.Count() > 0)
                     TR.CurFZone = TR.fzones.Last();
                 if (TR.fzones.Count() == 0)
