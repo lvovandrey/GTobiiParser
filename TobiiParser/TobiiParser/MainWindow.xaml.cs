@@ -4,8 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Windows;
 using System.Windows.Forms;
-
-
+using TobiiParser._06;
 
 namespace TobiiParser
 {
@@ -335,6 +334,21 @@ namespace TobiiParser
         private void MenuItem_Click_27(object sender, RoutedEventArgs e)
         {
             SpecialFor9_41_OPERATOR.ParseForSpecialGazeParams(@TextBoxTarget.Text, this.TextBoxCurDir, this.TextBox1);
+        }
+
+        private void MenuItem_Click_28(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void MenuItem_Click_29(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void MenuItem_Click_30(object sender, RoutedEventArgs e)
+        {
+            new For06_CALC1().SerializeKFiles(Path.Combine(TextBoxTarget.Text, "K.xlsx"), Path.Combine(TextBoxTarget.Text, "KFile.xml"));
         }
     }
 }

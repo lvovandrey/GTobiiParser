@@ -99,6 +99,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="06\For06_CALC1.cs" />
     <Compile Include="FilesOperations.cs" />
     <Compile Include="FZoneTab.cs" />
     <Compile Include="Interval.cs" />

@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 using System.Windows;
 using Excel = Microsoft.Office.Interop.Excel;
 
-namespace TobiiParser
+namespace TobiiParser._06
 {
-    internal class SpecialFor9_41_SP_NewProcessing:SpecialFor9_41_SCENARY3
+    internal class For06_CALC1 : SpecialFor9_41_SP_NewProcessing
     {
         /// <summary>
         /// Считывание разбивки на режимы (используется для формирования R-file) из xlsx файла формата 9.41-сц2
@@ -36,13 +36,17 @@ namespace TobiiParser
                     int i;
 
                     int iLastRow = sheet.Cells[sheet.Rows.Count, "A"].End[Excel.XlDirection.xlUp].Row;
-                    var arrData = (object[,])sheet.Range["A5:C" + iLastRow].Value; //берём данные с листа Excel
+                    var arrData = (object[,])sheet.Range["A5:D" + iLastRow].Value; //берём данные с листа Excel
 
-                    for (i = 1; i < arrData.GetUpperBound(0); i++)
+                    for (i = 1; i <= arrData.GetUpperBound(0); i++)
                     {
                         double t = (double)arrData[i, 1] * 3_600_000 * 24;
                         long tbeg = (long)t;
-                        double te = (double)arrData[i, 2] * 3_600_000 * 24;
+                        double te;
+                        if (i < arrData.GetUpperBound(0))
+                            te = (double)arrData[i + 1, 1] * 3_600_000 * 24;
+                        else
+                            te = 10 * 3_600_000 * 24;
                         long tend = (long)te;
 
                         Interval I = new Interval(
@@ -52,7 +56,8 @@ namespace TobiiParser
                         intervals.Add(I);
                     }
                     separatorIntervals.Intervals = intervals;
-                    separatorIntervals.Id = sheet.Cells[2, "H"].Value.ToString();
+                    separatorIntervals.Id = sheet.Cells[2, "G"].Value.ToString();
+                    separatorIntervals.Id = separatorIntervals.Id.Replace("\"", "");
 
                     separatorIntervals.tags = new List<string>();
                     var arrDataTags = (object[,])sheet.Range["A2:H2"].Value;
@@ -69,7 +74,7 @@ namespace TobiiParser
             }
             catch (Exception e)
             {
-                MessageBox.Show("SpecialFor9_41_SCENARY4.SeparatorIntervalsReadFromExcel.  Ошибка считывания файла " + filename + ":   " + e.Message + "    Stacktrace:" + e.StackTrace);
+                MessageBox.Show("For06_CALC1.SeparatorIntervalsReadFromExcel.  Ошибка считывания файла " + filename + ":   " + e.Message + "    Stacktrace:" + e.StackTrace);
             }
             finally
             {
@@ -84,11 +89,6 @@ namespace TobiiParser
 
 
 
-        /// <summary>
-        /// Считывание разбивки на режимы (используется для формирования R-file) из xlsx файла формата 9.41-сц2
-        /// </summary>
-        /// <param name="filename"></param>
-        /// <returns></returns>
         public override List<KadrIntervals> KadrIntervalsReadFromExcel(string filename)
         {
             //считываем данные из Excel файла в двумерный массив
@@ -104,7 +104,7 @@ namespace TobiiParser
                 foreach (Excel.Worksheet sheet in xlWB.Worksheets)
                 {
                     int iLastRow = sheet.Cells[sheet.Rows.Count, "A"].End[Excel.XlDirection.xlUp].Row;
-                    var arrData = (object[,])sheet.Range["A5:H" + iLastRow].Value; //берём данные с листа Excel
+                    var arrData = (object[,])sheet.Range["A5:D" + iLastRow].Value; //берём данные с листа Excel
                     KadrIntervals kadrIntervals = new KadrIntervals();
 
 
@@ -115,10 +115,13 @@ namespace TobiiParser
                     {
                         double t = (double)arrData[i, 1] * 3_600_000 * 24;
                         long tbeg = (long)t;
-                        double te = t + 3_600_000 * 24;
-                        if (i != arrData.GetUpperBound(0))
+                        double te;
+                        if (i < arrData.GetUpperBound(0))
                             te = (double)arrData[i + 1, 1] * 3_600_000 * 24;
+                        else
+                            te = 10 * 3_600_000 * 24;
                         long tend = (long)te;
+
                         string[] kadrs = new string[arrData.GetUpperBound(1) - 1];
                         int j;
                         for (j = 2; j <= arrData.GetUpperBound(1); j++)
@@ -130,17 +133,16 @@ namespace TobiiParser
                         intervals.Add(I);
                     }
                     kadrIntervals.Intervals = intervals;
-                    kadrIntervals.Id = sheet.Cells[2, "H"].Value.ToString();
+                    kadrIntervals.Id = sheet.Cells[2, "G"].Value.ToString().Replace("\"", ""); ;
 
                     kadrIntervals.tags = new List<string>();
-                    var arrDataTags = (object[,])sheet.Range["A2:H2"].Value;
-                    for (i = 1; i <= 8; i++)
+                    var arrDataTags = (object[,])sheet.Range["A2:G2"].Value;
+                    for (i = 1; i <= 7; i++)
                         if (arrDataTags[1, i] != null)
                             kadrIntervals.tags.Add(arrDataTags[1, i].ToString());
 
                     kadrIntervals.filename = "NONE!";
                     KadrIntervalsList.Add(kadrIntervals);
-                    Console.WriteLine(sheet.Name);
                 }
 
 
