@@ -18,74 +18,8 @@ namespace TobiiParser._06
         /// <returns></returns>
         public override List<SeparatorIntervals> SeparatorIntervalsReadFromExcel(string filename)
         {
-            //считываем данные из Excel файла в двумерный массив
-            Excel.Application xlApp = new Excel.Application(); //Excel
-            Excel.Workbook xlWB; //рабочая книга              
-            Excel.Worksheet xlSht; //лист Excel   
-            xlWB = xlApp.Workbooks.Open(filename); //название файла Excel    
-            int NShts = xlWB.Worksheets.Count;
-            List<SeparatorIntervals> SeparatorIntervalsList = new List<SeparatorIntervals>();
-            // xlSht = xlWB.Worksheets[1]; //название листа или 1-й лист в книге xlSht = xlWB.Worksheets[1];
-
-            try
-            {
-
-                foreach (Excel.Worksheet sheet in xlWB.Worksheets)
-                {
-                    SeparatorIntervals separatorIntervals = new SeparatorIntervals();
-                    List<Interval> intervals = new List<Interval>();
-                    int i;
-
-                    int iLastRow = sheet.Cells[sheet.Rows.Count, "A"].End[Excel.XlDirection.xlUp].Row;
-                    var arrData = (object[,])sheet.Range["A5:D" + iLastRow].Value; //берём данные с листа Excel
-
-                    for (i = 1; i <= arrData.GetUpperBound(0); i++)
-                    {
-                        double t = (double)arrData[i, 1] * 3_600_000 * 24;
-                        long tbeg = (long)t;
-                        double te;
-                        if (i < arrData.GetUpperBound(0))
-                            te = (double)arrData[i + 1, 1] * 3_600_000 * 24;
-                        else
-                            te = 10 * 3_600_000 * 24;
-                        long tend = (long)te;
-
-                        Interval I = new Interval(
-                                        ((string)arrData[i, 3]).Trim(),
-                                        tbeg,
-                                        tend);
-                        intervals.Add(I);
-                    }
-                    separatorIntervals.Intervals = intervals;
-                    separatorIntervals.Id = sheet.Cells[2, "G"].Value.ToString();
-                    separatorIntervals.Id = separatorIntervals.Id.Replace("\"", "");
-
-                    separatorIntervals.tags = new List<string>();
-                    var arrDataTags = (object[,])sheet.Range["A2:H2"].Value;
-                    for (i = 1; i <= 8; i++)
-                        if (arrDataTags[1, i] != null)
-                            separatorIntervals.tags.Add(arrDataTags[1, i].ToString());
-
-                    separatorIntervals.filename = "NONE!";
-                    SeparatorIntervalsList.Add(separatorIntervals);
-                }
-
-
-
-            }
-            catch (Exception e)
-            {
-                MessageBox.Show("For06_CALC1.SeparatorIntervalsReadFromExcel.  Ошибка считывания файла " + filename + ":   " + e.Message + "    Stacktrace:" + e.StackTrace);
-            }
-            finally
-            {
-                xlWB.Close(false); //закрываем книгу, изменения не сохраняем
-                xlApp.Quit(); //закрываем Excel
-            }
-
-
-
-            return SeparatorIntervalsList;
+          
+            return ReadCSVForRFiles(filename);
         }
 
 
@@ -173,7 +107,7 @@ namespace TobiiParser._06
         }
 
 
-        public void ReadCSVForRFiles(string filename)
+        public List<SeparatorIntervals> ReadCSVForRFiles(string filename)
         {
             string[] wrongEvents = new string[]{null, "", "RecordingStart",
                    "SyncPortOutHigh", "SyncPortOutLow","под зоны IntervalEnd",
@@ -185,12 +119,20 @@ namespace TobiiParser._06
 
             int N_timestampCol = 0, N_eventCol = 0;
             long i = 0;
+
+            SeparatorIntervals separatorIntervals = new SeparatorIntervals();
+            List<Interval> intervals = new List<Interval>();
+            separatorIntervals.filename = filename;
+            separatorIntervals.Id = Path.GetFileNameWithoutExtension(filename);
+
             using (StreamReader rd = new StreamReader(new FileStream(filename, FileMode.Open)))
             {
                 string[] first_string_arr = { "" };
                 first_string_arr = rd.ReadLine().Split(delimiter);
                 N_timestampCol = TobiiCsvReader.SearchColFirst(first_string_arr, "Recording timestamp");
                 N_eventCol = TobiiCsvReader.SearchColFirst(first_string_arr, "Event");
+
+
 
                 bool EndOfFile = false;
                 while (!EndOfFile)
@@ -202,29 +144,32 @@ namespace TobiiParser._06
                     str_arr = big_str.Split(separator);
                     foreach (string s in str_arr)
                     {
+
                         string[] tmp = { "" };
                         i++;
                         tmp = s.Split(delimiter);
                         if (tmp.Count() < 3) continue;
-                        TobiiRecord TR = new TobiiRecord();
-                        if (!long.TryParse(tmp[N_timestampCol], out TR.time_ms))
+                        if (IsWrongEvent(wrongEvents, tmp[N_eventCol])) continue;
+                        Interval interval = new Interval();
+
+                        if (!long.TryParse(tmp[N_timestampCol], out interval.Time_ms_beg))
                             throw new Exception("Не могу преобразовать в timestamp строку  " + tmp[N_timestampCol]);
-
-                        string[] Hits = new string[tmp.Count()];
-                        try
-                        {
-                            Array.Copy(tmp, N_firstZoneCol, Hits, 0, ZoneColCount);
-                        }
-                        catch
-                        { Console.WriteLine("!!!"); }
-                        TR.zones = SearchCol(Hits, "1");
-                        tobiiList.Add(TR);
+                        if (intervals.Count > 0)
+                            intervals.Last().Time_ms_end = interval.Time_ms_beg-1;
+                        interval.Name = tmp[N_eventCol];
+                        intervals.Add(interval);
                     }
-
+                   
                 }
 
-                FiltredTobiiList = CompactTobiiRecords(tobiiList);
+                intervals.Remove(intervals.Last());//убираем последний интервал, т.к. там последняя строка записи.
+                separatorIntervals.Intervals = intervals;
+
             }
+
+            List<SeparatorIntervals> SeparatorIntervalsList = new List<SeparatorIntervals>();
+            SeparatorIntervalsList.Add(separatorIntervals);
+            return SeparatorIntervalsList;
         }
 
     }
