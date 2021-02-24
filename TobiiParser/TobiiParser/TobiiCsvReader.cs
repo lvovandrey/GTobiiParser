@@ -163,7 +163,7 @@ namespace TobiiParser
         /// <param name="row"></param>
         /// <param name="colName"></param>
         /// <returns></returns>
-        List<int> SearchCol(string[] row, string colName)
+        public static List<int> SearchCol(string[] row, string colName)
         {
             List<int> zones = new List<int>();
             int ii = 0;
@@ -179,7 +179,7 @@ namespace TobiiParser
             return zones;
         }
 
-        int SearchColFirst(string[] row, string colName)
+        public static int SearchColFirst(string[] row, string colName)
         {
             int ii = 0;
             bool find = false;
@@ -195,7 +195,7 @@ namespace TobiiParser
         }
 
 
-        private bool IsEqual(List<int> a, List<int> b)
+        public static bool IsEqual(List<int> a, List<int> b)
         {
             if (a.Count() != b.Count) return false;
             for (int i = 0; i < a.Count; i++)
