@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Xml.Serialization;
 using Excel = Microsoft.Office.Interop.Excel;
 
 namespace TobiiParser._06
@@ -16,13 +17,32 @@ namespace TobiiParser._06
         /// </summary>
         /// <param name="filename"></param>
         /// <returns></returns>
-        public override List<SeparatorIntervals> SeparatorIntervalsReadFromExcel(string filename)
+        public virtual List<SeparatorIntervals> SeparatorIntervalsReadFromExcelFromDirCSV(string dir)
         {
-          
-            return ReadCSVForRFiles(filename);
+            string[] filenames = Directory.GetFiles(dir, "*.csv", SearchOption.AllDirectories);
+            List<SeparatorIntervals> SeparatorIntervalsList = new List<SeparatorIntervals>();
+
+            foreach (var filename in filenames)
+            {
+                SeparatorIntervalsList.Add(ReadCSVForRFiles(filename));
+            }
+            return SeparatorIntervalsList;
         }
 
+        /// <summary>
+        /// Создание через сериализацию RFile.xml
+        /// </summary>
+        internal async virtual void SerializeRFilesFromCSVinDir(string sourceDirname, string targetRFileName)
+        {
+            List<SeparatorIntervals> SeparatorIntervalsList = new List<SeparatorIntervals>();
+            await Task.Run(() => { SeparatorIntervalsList = SeparatorIntervalsReadFromExcelFromDirCSV(sourceDirname); });
+            XmlSerializer formatter = new XmlSerializer(typeof(List<SeparatorIntervals>));
 
+            using (FileStream fs = new FileStream(@targetRFileName, FileMode.OpenOrCreate))
+            {
+                formatter.Serialize(fs, SeparatorIntervalsList);
+            }
+        }
 
         public override List<KadrIntervals> KadrIntervalsReadFromExcel(string filename)
         {
@@ -107,7 +127,7 @@ namespace TobiiParser._06
         }
 
 
-        public List<SeparatorIntervals> ReadCSVForRFiles(string filename)
+        public SeparatorIntervals ReadCSVForRFiles(string filename)
         {
             string[] wrongEvents = new string[]{null, "", "RecordingStart",
                    "SyncPortOutHigh", "SyncPortOutLow","под зоны IntervalEnd",
@@ -167,9 +187,7 @@ namespace TobiiParser._06
 
             }
 
-            List<SeparatorIntervals> SeparatorIntervalsList = new List<SeparatorIntervals>();
-            SeparatorIntervalsList.Add(separatorIntervals);
-            return SeparatorIntervalsList;
+            return separatorIntervals;
         }
 
     }

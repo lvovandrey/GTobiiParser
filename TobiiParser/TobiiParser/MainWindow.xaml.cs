@@ -343,7 +343,7 @@ namespace TobiiParser
 
         private void MenuItem_Click_29(object sender, RoutedEventArgs e)
         {
-            new For06_CALC1().SerializeRFiles(Path.Combine(TextBoxTarget.Text, "033.csv"), Path.Combine(TextBoxTarget.Text, "RFile.xml"));
+            new For06_CALC1().SerializeRFilesFromCSVinDir(TextBoxTarget.Text, Path.Combine(TextBoxTarget.Text, "RFile.xml"));
         }
 
         private void MenuItem_Click_30(object sender, RoutedEventArgs e)
