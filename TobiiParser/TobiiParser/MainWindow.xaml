@@ -126,7 +126,7 @@
             <Label Content="Кадр по умолчанию" HorizontalAlignment="Left" Margin="314,112,0,0" VerticalAlignment="Top"/>
             <TextBox x:Name="TextBoxFixationAddition" HorizontalAlignment="Left"  Height="23" Margin="198,136,0,0" TextWrapping="Wrap" Text="500" VerticalAlignment="Top" Width="72"/>
             <TextBlock Text="Прибавка к фиксации, мсек" TextWrapping="Wrap" HorizontalAlignment="Left" Margin="198,112,0,0" VerticalAlignment="Top" Height="24" Width="87" FontSize="10"/>
-            <TextBox x:Name="TextBoxNZones" HorizontalAlignment="Left"  Height="23" Margin="314,71,0,0" TextWrapping="Wrap" Text="12" VerticalAlignment="Top" Width="72"/>
+            <TextBox x:Name="TextBoxNZones" HorizontalAlignment="Left"  Height="23" Margin="314,71,0,0" TextWrapping="Wrap" Text="48" VerticalAlignment="Top" Width="72"/>
             <TextBlock Text="Кол-во зон в csv-файле (кол-во AOIHit столбцов)" TextWrapping="Wrap" HorizontalAlignment="Left" Margin="300,42,0,0" VerticalAlignment="Top" Height="29" Width="121" FontSize="10"/>
 
         </Grid>

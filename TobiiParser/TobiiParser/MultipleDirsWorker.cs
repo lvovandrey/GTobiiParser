@@ -73,7 +73,7 @@ namespace TobiiParser
         }
 
 
-        public static async void PassAllDIrs_OneRegFile(string mainDir, TextBox textBox, TextBox Big_textBox, string tab2File,int NZones, string KadrDefault="")
+        public static async void PassAllDIrs_OneRegFile(string mainDir, TextBox textBox, TextBox Big_textBox, string tab2File,int NZones, string KadrDefault="", string tab2FileLastColumn = "T")
         {
             string[] dirs = Directory.GetDirectories(mainDir, "*", SearchOption.AllDirectories);
             foreach (var dir in dirs)
@@ -99,7 +99,7 @@ namespace TobiiParser
                 }
 
                 textBox.Text = "Обрабатываю " + dir;
-                await Task.Run(() => ParseInDirectory_OneRegFile(dir, file_csv, file_k, file_r, tab2File, NZones, KadrDefault));
+                await Task.Run(() => ParseInDirectory_OneRegFile(dir, file_csv, file_k, file_r, tab2File, NZones, KadrDefault, tab2FileLastColumn));
             }
 
             textBox.Text = "Обработка завершена";
@@ -145,13 +145,13 @@ namespace TobiiParser
         }
 
 
-        private static void ParseInDirectory_OneRegFile(string dir, string file_csv, string file_k, string file_r, string tab2File, int NZones, string kadrDefault="")
+        private static void ParseInDirectory_OneRegFile(string dir, string file_csv, string file_k, string file_r, string tab2File, int NZones, string kadrDefault="", string tab2FileLastColumn ="T")
         {
             TobiiCsvReader tobiiCsvReader = new TobiiCsvReader();
             List<TobiiRecord> tobiiRecords = new List<TobiiRecord>();
             tobiiCsvReader.TobiiCSCRead(file_csv, tobiiRecords, NZones);
             List<TobiiRecord> FiltredTobiiList = tobiiCsvReader.CompactTobiiRecords(tobiiRecords);
-            TabOfKeys tabOfKeys = ExcelReader.ReadTabOfKeys(tab2File, "T");
+            TabOfKeys tabOfKeys = ExcelReader.ReadTabOfKeys(tab2File, tab2FileLastColumn);
 
             Regex regex = new Regex(@"id\d{3}");
             MatchCollection matches = regex.Matches(Path.GetFileName(file_csv));

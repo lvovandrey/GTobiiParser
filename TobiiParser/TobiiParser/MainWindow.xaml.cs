@@ -338,6 +338,18 @@ namespace TobiiParser
 
         private void MenuItem_Click_28(object sender, RoutedEventArgs e)
         {
+            MultipleDirsWorker.FixationAddition = 500;
+            if (!int.TryParse(TextBoxFixationAddition.Text, out MultipleDirsWorker.FixationAddition))
+            {
+                System.Windows.MessageBox.Show("Введите корректное значение добавки к фиксациям, в милисекундах"); return;
+            }
+            int NZones = 0;
+            if (!int.TryParse(TextBoxNZones.Text, out NZones))
+            {
+                System.Windows.MessageBox.Show("Задайте кол-во зон");
+                return;
+            }
+            MultipleDirsWorker.PassAllDIrs_OneRegFile(@TextBoxTarget.Text, this.TextBoxCurDir, this.TextBox1, @"C:\_\Tab2new2.xlsx", NZones, TextBoxKadrDefault.Text, "E");
 
         }
 
