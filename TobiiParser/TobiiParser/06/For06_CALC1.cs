@@ -129,7 +129,7 @@ namespace TobiiParser._06
 
         public SeparatorIntervals ReadCSVForRFiles(string filename)
         {
-            string[] wrongEvents = new string[]{null, "", "RecordingStart",
+            string[] wrongEvents = new string[]{null, "", "RecordingPause", "RecordingBuffering",
                    "SyncPortOutHigh", "SyncPortOutLow","под зоны IntervalEnd",
                     "под зоны IntervalStart"};
 
